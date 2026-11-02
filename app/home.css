@@ -1,0 +1,38 @@
+.home-phone{width:100%;max-width:390px;min-height:100vh;margin:0 auto;background:#f5f6f8;color:#263342;display:flex;flex-direction:column;font-family:Inter,Arial,sans-serif}
+.home-header{height:70px;flex:none;background:#0b3d75;color:#fff;padding:0 16px;display:flex;align-items:center;justify-content:space-between}
+.home-brand{color:#fff;text-decoration:none;font-size:17px;font-weight:800;letter-spacing:.2px}
+.home-tools{display:flex;align-items:center;gap:14px}
+.home-icon-button,.home-profile{position:relative;border:0;background:transparent;color:#fff;display:grid;place-items:center;width:30px;height:30px;text-decoration:none}
+.home-icon-button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.home-icon-button i{position:absolute;right:-1px;top:-2px;border-radius:50%;width:15px;height:15px;background:#ffcc29;color:#17304c;font-size:10px;font-style:normal;font-weight:800;display:grid;place-items:center}
+.home-profile{border-radius:50%;background:#ffffff20}
+.home-profile img{width:18px;height:18px;filter:brightness(0) invert(1)}
+.home-content{padding:14px 13px 20px;display:flex;flex:1;flex-direction:column;gap:12px}
+.home-greeting h1{font-size:17px;line-height:22px;margin:0 0 2px;font-weight:750}
+.home-greeting p{font-size:11px;color:#76808e;margin:0}
+.home-success{min-height:28px;margin:0;padding:0 10px;border-radius:7px;background:#d8f8e5;color:#237248;display:flex;align-items:center;gap:8px;font-size:10px}
+.home-success span{width:13px;height:13px;border:1.5px solid #278553;border-radius:50%;display:grid;place-items:center;font-size:9px;font-weight:800}
+.home-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.home-action-card{min-height:104px;border-radius:12px;padding:11px 12px;display:flex;flex-direction:column;align-items:flex-start;text-decoration:none;gap:5px}
+.home-action-card.report-lost{background:#0b3d75;color:white}
+.home-action-card.report-found{background:#ffcb35;color:#172738}
+.action-mark{height:19px;width:19px;display:block}
+.action-mark svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.home-action-card strong{font-size:13px;line-height:16px}
+.home-action-card>span:last-child{font-size:10px;line-height:13px;opacity:.82}
+.home-section-heading{display:flex;align-items:center;justify-content:space-between;margin:0 1px -4px}
+.home-section-heading h2{font-size:13px;line-height:18px;margin:0;font-weight:750}
+.home-section-heading a{color:#0b3d75;text-decoration:none;font-weight:650;font-size:9px}
+.home-recent-list{display:flex;flex-direction:column;gap:8px}
+.home-find-card{height:90px;border:1px solid #dfe3e9;border-radius:11px;background:white;padding:7px;display:flex;align-items:center;gap:9px;text-decoration:none;color:inherit;box-shadow:0 1px 2px #1a2b3a0b}
+.home-find-card>img{width:68px;height:74px;object-fit:cover;border-radius:8px;background:#edf0f2}
+.find-copy{min-width:0;align-self:center;display:flex;flex-direction:column;gap:4px;flex:1}
+.find-copy strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.find-copy>span,.find-copy small{font-size:9px;color:#77818e;line-height:12px}
+.find-status{flex:none;align-self:flex-end;margin-bottom:7px;border-radius:20px;background:#daf7e6;color:#287349;padding:4px 7px;font-size:8px;font-weight:700}
+.home-nav{height:54px;flex:none;display:flex;background:white;border-top:1px solid #dfe3e9}
+.home-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-decoration:none;color:#7d8794;font-size:9px}
+.home-nav img{width:17px;height:17px;object-fit:contain;opacity:.74}
+.home-nav a.active{border-top:2px solid #0b3d75;color:#0b3d75;font-weight:700}
+.home-nav a.active img{opacity:1}
+@media(min-width:600px){.home-phone{min-height:844px;margin:20px auto;box-shadow:0 12px 35px #17273820;border-radius:8px;overflow:hidden}.home-content{padding:18px 14px 24px}.home-action-card{min-height:110px}.home-find-card{height:92px}}

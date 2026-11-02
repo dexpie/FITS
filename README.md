@@ -2,10 +2,11 @@
 
 Proyek ini berisi lima halaman contoh FITS yang dibuat dengan Next.js, React, TypeScript, dan CSS. Setiap halaman mewakili use case yang dikerjakan oleh anggota kelompok. Data yang tampil masih berupa contoh dan belum tersimpan ke database.
 
-Jalankan `npm install`, lalu `npm run dev`. 
+Jalankan `npm install`, lalu `npm run dev`. Halaman Beranda tersedia di `/`, dan UC-05 tersedia di `/uc05`.
 
 | Use case | Halaman | File |
 | --- | --- | --- |
+| Beranda FITS | `/` | `app/page.tsx` |
 | UC-02 Login | `/uc02` | `app/uc02/page.tsx` |
 | UC-05 Melaporkan Kehilangan Barang | `/uc05` | `app/uc05/page.tsx` |
 | UC-08 Laporan Saya | `/uc08` | `app/uc08/page.tsx` |

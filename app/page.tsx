@@ -33,7 +33,7 @@ export default function Home() {
           <span className="action-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.2"/><path d="m16 16 5 5M8.5 8.5l4.6 4.6m0-4.6-4.6 4.6"/></svg></span>
           <strong>Lapor Hilang</strong><span>Kehilangan barang?<br />Laporkan di sini.</span>
         </Link>
-        <Link href="/uc12" className="home-action-card report-found">
+        <Link href="/uc07" className="home-action-card report-found">
           <span className="action-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 8 9-5 9 5-9 5-9-5Zm0 0v9l9 5 9-5V8M12 13v9m5-11v5l-2-1.2-2 1.2v-5"/></svg></span>
           <strong>Lapor Temuan</strong><span>Bantu kembalikan barang<br />yang kamu temukan.</span>
         </Link>

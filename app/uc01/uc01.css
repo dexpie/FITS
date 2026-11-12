@@ -1,0 +1,32 @@
+/* UC-01 Daftar ke Akun FITS. Kelas dasar (view-phone, view-header, view-content) dari app/views.css. */
+.uc01 .view-header img { width: 20px; height: 20px; display: block; }
+.uc01-pengantar { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 0 4px; }
+.uc01-logo { width: 64px; height: 64px; border-radius: 16px; background: #073a75; color: #ffcc29; display: grid; place-items: center; font-weight: 800; font-size: 18px; }
+.uc01-pengantar h2 { margin: 6px 0 0; font-size: 20px; color: #073a75; }
+.uc01-pengantar p { margin: 0; font-size: 12px; color: #6b7280; line-height: 18px; }
+.uc01-form { display: flex; flex-direction: column; gap: 12px; }
+.uc01-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+.uc01-form input { height: 44px; border: 1px solid #dde1e7; border-radius: 8px; padding: 0 12px; font-size: 14px; background: #fff; width: 100%; box-sizing: border-box; }
+.uc01-form label.salah input { border-color: #dc2626; background: #fef2f2; }
+.uc01-form small { color: #dc2626; font-size: 11px; font-weight: 500; }
+.uc01-sandi { position: relative; display: block; }
+.uc01-sandi button { position: absolute; right: 10px; top: 12px; border: 0; background: transparent; padding: 0; cursor: pointer; }
+.uc01-sandi img { width: 20px; height: 20px; display: block; }
+.uc01-tombol { height: 48px; border: 0; border-radius: 8px; background: #ffcc29; color: #1f2937; font-weight: 700; font-size: 14px; display: grid; place-items: center; text-decoration: none; cursor: pointer; }
+.uc01-tombol:disabled { background: #e1e4e9; color: #6b7280; cursor: wait; }
+.uc01-tombol-garis { height: 44px; border: 1px solid #073a75; border-radius: 8px; background: #fff; color: #073a75; font-weight: 700; cursor: pointer; }
+.uc01-masuk { text-align: center; font-size: 12px; color: #6b7280; margin: 0; }
+.uc01-masuk a { color: #073a75; font-weight: 700; }
+.uc01-galat-umum { margin: 0; padding: 10px 12px; border-radius: 8px; background: #fef2f2; color: #b91c1c; font-size: 12px; }
+.uc01-pemberitahuan { background: #edf3fa; border: 1px solid #c9d8ec; border-radius: 12px; padding: 12px; font-size: 12px; line-height: 18px; }
+.uc01-pemberitahuan p { margin: 6px 0 0; }
+.uc01-judul { display: flex; align-items: center; gap: 8px; color: #073a75; }
+.uc01-judul img { width: 20px; height: 20px; }
+.uc01-info { font-size: 12px; color: #4b5563; margin: 0; }
+.uc01-tengah { align-items: center; text-align: center; justify-content: center; }
+.uc01-tengah h2 { margin: 8px 0 0; color: #073a75; }
+.uc01-tengah p { margin: 0; font-size: 13px; color: #4b5563; }
+.uc01-tengah .uc01-tombol { width: 100%; margin-top: 12px; }
+.uc01-ikon-bulat { width: 64px; height: 64px; border-radius: 50%; background: #edf3fa; display: grid; place-items: center; }
+.uc01-ikon-bulat.hijau { background: #16a34a; }
+.uc01-ikon-bulat img { width: 30px; height: 30px; }

@@ -1,0 +1,26 @@
+/* UC-09 Menerima Notifikasi. Kelas dasar (view-phone, view-header, view-content) dari app/views.css. */
+.uc09 .view-header img { width: 20px; height: 20px; display: block; }
+.uc09 .view-header h1 { flex: 1; }
+.uc09-penanda { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: #ffcc29; color: #1f2937; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+.uc09-info { font-size: 12px; color: #6b7280; margin: 0; }
+.uc09-info.merah { color: #b91c1c; }
+.uc09-banner { display: flex; gap: 10px; align-items: flex-start; background: #edf3fa; border: 1px solid #c9d8ec; border-radius: 12px; padding: 12px; }
+.uc09-banner img { width: 20px; height: 20px; }
+.uc09-banner strong { font-size: 12px; color: #073a75; }
+.uc09-banner p { margin: 4px 0 0; font-size: 11px; line-height: 16px; color: #4b5563; }
+.uc09-kartu { display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; background: #fff; border: 1px solid #c9d8ec; border-radius: 12px; padding: 12px; cursor: pointer; font: inherit; color: inherit; }
+.uc09-kartu.dibaca { border-color: #dde1e7; background: #fbfbfc; }
+.uc09-kategori { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0; }
+.uc09-kategori img { width: 20px; height: 20px; }
+.uc09-kategori.kuning { background: #fff7d6; }
+.uc09-kategori.hijau { background: #dcfce7; }
+.uc09-kategori.biru { background: #edf3fa; }
+.uc09-kategori.abu { background: #f1f2f4; }
+.uc09-isi { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.uc09-isi strong { font-size: 13px; color: #1f2937; }
+.uc09-isi span { font-size: 12px; line-height: 17px; color: #4b5563; }
+.uc09-isi small { font-size: 11px; color: #9ca3af; }
+.uc09-kartu:not(.dibaca) .uc09-isi strong { color: #073a75; }
+.uc09-arah { width: 16px; height: 16px; margin-top: 2px; }
+.uc09-kosong { display: flex; flex-direction: column; gap: 10px; align-items: stretch; text-align: center; font-size: 13px; color: #4b5563; }
+.uc09-tombol { height: 44px; border-radius: 8px; background: #ffcc29; color: #1f2937; font-weight: 700; display: grid; place-items: center; text-decoration: none; }

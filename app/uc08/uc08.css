@@ -1,0 +1,16 @@
+/* UC-08 Memantau Status Laporan. Kelas dasar dari app/views.css dan app/uc08/detail.css. */
+.uc08 .view-nav a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-size: 11px; color: #6b7280; text-decoration: none; }
+.uc08 .view-nav a.active { border-top: 2px solid #073a75; color: #073a75; font-weight: 600; }
+.uc08 .report-bottom a { color: #073a75; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 4px; text-decoration: none; }
+.uc08 .report-bottom a img { width: 16px; height: 16px; }
+.uc08 .badge.merah { background: #fee2e2; color: #b91c1c; }
+.uc08-merah, .uc08-merah strong { color: #b91c1c !important; }
+.uc08-kosong { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding: 24px 0; font-size: 13px; color: #6b7280; }
+.uc08-kosong img { width: 96px; }
+.uc08-tombol { min-height: 36px; padding: 0 14px; border-radius: 8px; background: #ffcc29; color: #1f2937; font-weight: 700; font-size: 13px; display: inline-grid; place-items: center; text-decoration: none; }
+.uc08-peringatan { display: flex; gap: 10px; align-items: flex-start; background: #fff3d6; border: 1px solid #f5d28b; border-radius: 12px; padding: 12px; }
+.uc08-peringatan.merah { background: #fef2f2; border-color: #fecaca; }
+.uc08-peringatan img { width: 20px; height: 20px; }
+.uc08-peringatan div { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.uc08-peringatan strong { font-size: 13px; }
+.uc08-peringatan span { font-size: 11px; color: #4b5563; }

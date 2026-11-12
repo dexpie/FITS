@@ -1,0 +1,28 @@
+/* UC-10 Memperpanjang Laporan. Kelas dasar (view-phone, view-header, view-content) dari app/views.css. */
+.uc10 .view-header img { width: 20px; height: 20px; display: block; }
+.uc10-info { font-size: 12px; color: #6b7280; margin: 0; }
+.uc10-form { display: flex; flex-direction: column; gap: 14px; }
+.uc10-kartu { background: #fff; border: 1px solid #dde1e7; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+.uc10-kartu > span { font-size: 11px; color: #6b7280; }
+.uc10-kartu > strong { font-size: 15px; }
+.uc10-baris { border-top: 1px solid #dde1e7; margin-top: 6px; padding-top: 8px; display: flex; justify-content: space-between; font-size: 12px; }
+.uc10-durasi { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.uc10-durasi legend { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.uc10-durasi label { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #dde1e7; border-radius: 10px; padding: 12px; cursor: pointer; }
+.uc10-durasi label.dipilih { border-color: #073a75; background: #edf3fa; }
+.uc10-durasi input { accent-color: #073a75; }
+.uc10-durasi span { flex: 1; display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+.uc10-durasi small { font-size: 11px; color: #6b7280; }
+.uc10-durasi img { width: 18px; height: 18px; }
+.uc10-catatan { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
+.uc10-catatan textarea { border: 1px solid #dde1e7; border-radius: 8px; padding: 10px; font: inherit; font-weight: 400; font-size: 13px; resize: vertical; }
+.uc10-tombol { min-height: 48px; border: 0; border-radius: 8px; background: #ffcc29; color: #1f2937; font-weight: 700; font-size: 14px; display: grid; place-items: center; text-decoration: none; cursor: pointer; }
+.uc10-tombol:disabled { background: #e1e4e9; color: #6b7280; }
+.uc10-galat { margin: 0; padding: 10px 12px; border-radius: 8px; background: #fef2f2; color: #b91c1c; font-size: 12px; }
+.uc10-berhasil { background: #dcfce7; border: 1px solid #bbf7d0; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.uc10-berhasil strong { color: #166534; }
+.uc10-berhasil p { margin: 0; font-size: 13px; }
+.uc10-peringatan { display: flex; gap: 10px; align-items: flex-start; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 12px; }
+.uc10-peringatan img { width: 20px; height: 20px; }
+.uc10-peringatan div { display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
+.uc10-peringatan a { color: #073a75; font-weight: 700; }

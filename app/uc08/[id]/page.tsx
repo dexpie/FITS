@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { alamatFoto, ambilDetailLaporan, isKadaluarsa, isMendekatiKadaluarsa, tanggal, waktu, warnaStatus } from '../repository';
 import type { DetailLaporan, Hasil, JenisLaporan } from '../types';
-import '../uc08.css';
 
 function Detail() {
   const { id } = useParams<{ id: string }>();
@@ -31,8 +30,8 @@ function Detail() {
     <header className="view-header"><Link href="/uc08" aria-label="Kembali ke Laporan Saya"><img src="/uc08/5ce6a.svg" alt="" /></Link><h1>Detail Laporan</h1></header>
     <section className="view-content report-detail">
       {!hasil && <p className="no-results">Memuat detail laporan...</p>}
-      {hasil?.status === 'belum-masuk' && <div className="uc08-kosong"><p>Masuk terlebih dahulu.</p><Link href="/uc02" className="uc08-tombol">Masuk</Link></div>}
-      {hasil?.status === 'galat' && <p className="no-results uc08-merah" role="alert">{hasil.pesan}</p>}
+      {hasil?.status === 'belum-masuk' && <div className="flex flex-col items-center gap-2.5 py-6 text-center text-[13px] text-gray-500 [&_img]:w-24"><p>Masuk terlebih dahulu.</p><Link href="/uc02" className="inline-grid min-h-9 place-items-center rounded-lg bg-[#ffcc29] px-3.5 text-[13px] font-bold text-gray-800 no-underline">Masuk</Link></div>}
+      {hasil?.status === 'galat' && <p className="no-results !text-red-700" role="alert">{hasil.pesan}</p>}
       {hasil?.status === 'ok' && !laporan && <p className="no-results">Laporan tidak ditemukan di Laporan Saya.</p>}
       {laporan && <>
         <article className="detail-card"><div className="report-top">
@@ -41,15 +40,15 @@ function Detail() {
             <span className={'badge ' + warnaStatus(laporan.status_laporan)}>{laporan.status_laporan}</span></div>
         </div></article>
 
-        {isMendekatiKadaluarsa(laporan) && <article className="uc08-peringatan">
+        {isMendekatiKadaluarsa(laporan) && <article className="flex items-start gap-2.5 rounded-xl border border-[#f5d28b] bg-[#fff3d6] p-3 [&_img]:h-5 [&_img]:w-5 [&_div]:flex [&_div]:flex-col [&_div]:items-start [&_div]:gap-1.5 [&_strong]:text-[13px] [&_span]:text-[11px] [&_span]:text-gray-600">
           <img src="/uc08/jam-peringatan.svg" alt="" />
           <div><strong>Masa Aktif Laporan Hampir Berakhir</strong><span>Tinggal {laporan.sisa_hari} hari. Perpanjang agar laporan tetap aktif.</span>
-            <Link href={`/uc10/${laporan.id}`} className="uc08-tombol">Perpanjang Laporan</Link></div>
+            <Link href={`/uc10/${laporan.id}`} className="inline-grid min-h-9 place-items-center rounded-lg bg-[#ffcc29] px-3.5 text-[13px] font-bold text-gray-800 no-underline">Perpanjang Laporan</Link></div>
         </article>}
-        {isKadaluarsa(laporan) && <article className="uc08-peringatan merah">
+        {isKadaluarsa(laporan) && <article className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3 [&_img]:h-5 [&_img]:w-5 [&_div]:flex [&_div]:flex-col [&_div]:items-start [&_div]:gap-1.5 [&_strong]:text-[13px] [&_span]:text-[11px] [&_span]:text-gray-600">
           <img src="/uc08/jam-peringatan.svg" alt="" />
           <div><strong>Laporan Sudah Kadaluarsa</strong><span>Laporan yang kadaluarsa tidak bisa diperpanjang.</span>
-            <Link href="/uc05" className="uc08-tombol">Buat Laporan Baru</Link></div>
+            <Link href="/uc05" className="inline-grid min-h-9 place-items-center rounded-lg bg-[#ffcc29] px-3.5 text-[13px] font-bold text-gray-800 no-underline">Buat Laporan Baru</Link></div>
         </article>}
 
         <article className="detail-card info-card">
@@ -72,7 +71,7 @@ function Detail() {
 
         <article className="detail-card history-card">
           <h2>Riwayat Status</h2>
-          {riwayatTampil.map((r, i) => <div className={'history-item' + (r.status === 'Kadaluarsa' ? ' uc08-merah' : '')} key={i}>
+          {riwayatTampil.map((r, i) => <div className={'history-item' + (r.status === 'Kadaluarsa' ? ' !text-red-700 [&_strong]:!text-red-700' : '')} key={i}>
             <img src="/uc08/92b85.svg" alt="" />
             <div><strong>{r.keterangan}</strong><p>{waktu(r.waktu)} — {r.aktor}</p>{r.catatan && <p>Catatan: {r.catatan}</p>}</div>
           </div>)}

@@ -13,22 +13,25 @@ values ('foto-temuan', 'foto-temuan', false, 5242880,
         array['image/jpeg', 'image/png', 'image/webp'])
 on conflict (id) do nothing;
 
+drop policy if exists "Foto temuan: unggah milik sendiri" on storage.objects;
 create policy "Foto temuan: unggah milik sendiri"
   on storage.objects for insert to authenticated
   with check (bucket_id = 'foto-temuan' and (storage.foldername(name))[1] = (select auth.uid())::text);
+drop policy if exists "Foto temuan: lihat milik sendiri" on storage.objects;
 create policy "Foto temuan: lihat milik sendiri"
   on storage.objects for select to authenticated
   using (bucket_id = 'foto-temuan' and (storage.foldername(name))[1] = (select auth.uid())::text);
+drop policy if exists "Foto temuan: hapus milik sendiri" on storage.objects;
 create policy "Foto temuan: hapus milik sendiri"
   on storage.objects for delete to authenticated
   using (bucket_id = 'foto-temuan' and (storage.foldername(name))[1] = (select auth.uid())::text);
 
 -- Pastikan satu pengguna tidak memiliki dua laporan menunggu penyerahan.
-create unique index laporan_temuan_satu_menunggu_per_pengguna
+create unique index if not exists laporan_temuan_satu_menunggu_per_pengguna
   on public.laporan_temuan (id_pembuat)
   where status_laporan = 'Menunggu Penyerahan';
 
-create function public.buat_laporan_temuan_uc07(
+create or replace function public.buat_laporan_temuan_uc07(
   p_barang_nama text, p_barang_kategori text, p_deskripsi text,
   p_barang_merek text, p_lokasi text, p_tanggal_penemuan date,
   p_foto_path text, p_pertanyaan text[], p_jawaban text[]

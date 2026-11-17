@@ -115,6 +115,7 @@ begin
     update public.laporan_kehilangan
       set status_laporan = 'Kadaluarsa'
       where status_laporan = 'Aktif' and tanggal_kadaluarsa < (now() at time zone 'Asia/Jakarta')::date
+        and ((select auth.uid()) is null or id_pembuat = (select auth.uid()))
       returning id
   )
   insert into public.riwayat_status_laporan (jenis_laporan, id_laporan, status, keterangan)

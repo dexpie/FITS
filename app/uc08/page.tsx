@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { alamatFoto, ambilLaporanSaya, tanggal, warnaStatus } from './repository';
 import type { Hasil, JenisLaporan, LaporanSaya } from './types';
-import './uc08.css';
 
 const JENIS: (JenisLaporan | 'Semua')[] = ['Semua', 'Kehilangan', 'Temuan'];
 const NAV = [['c9713.svg', 'Beranda', '/'], ['d872e.svg', 'Laporan', '/uc08'], ['bf7bc.svg', 'Temuan', '/uc12'], ['5c528.svg', 'Profil', '/uc02']];
@@ -39,9 +38,9 @@ export default function LaporanSayaPage() {
   return <main className="view-phone uc08">
     <header className="view-header"><Link href="/" aria-label="Kembali"><img src="/uc08/5ce6a.svg" alt="" /></Link><h1>Laporan Saya</h1></header>
     <section className="view-content">
-      {hasil?.status === 'belum-masuk' ? <div className="uc08-kosong">
+      {hasil?.status === 'belum-masuk' ? <div className="flex flex-col items-center gap-2.5 py-6 text-center text-[13px] text-gray-500 [&_img]:w-24">
         <p>Masuk terlebih dahulu untuk melihat laporanmu.</p>
-        <Link href="/uc02" className="uc08-tombol">Masuk</Link>
+        <Link href="/uc02" className="inline-grid min-h-9 place-items-center rounded-lg bg-[#ffcc29] px-3.5 text-[13px] font-bold text-gray-800 no-underline">Masuk</Link>
       </div> : <>
         <div className="filter-group"><span>Jenis laporan</span><div className="pills">
           {JENIS.map((x) => <button key={x} className={jenis === x ? 'chosen' : ''} onClick={() => setJenis(x)}>{x}</button>)}
@@ -50,7 +49,7 @@ export default function LaporanSayaPage() {
           {['Semua', ...daftarStatus].map((x) => <button key={x} className={status === x ? 'chosen' : ''} onClick={() => setStatus(x)}>{x}</button>)}
         </div></div>
         {!hasil && <p className="no-results">Memuat laporan...</p>}
-        {hasil?.status === 'galat' && <p className="no-results uc08-merah" role="alert">{hasil.pesan}</p>}
+        {hasil?.status === 'galat' && <p className="no-results !text-red-700" role="alert">{hasil.pesan}</p>}
         {hasil?.status === 'ok' && <>
           <div className="results-count"><span>{daftar.length} LAPORAN</span><b>Terbaru</b></div>
           {daftar.map((l) => <article className="report-card" key={l.jenis + l.id}>
@@ -60,15 +59,15 @@ export default function LaporanSayaPage() {
             </div>
             <div className="report-bottom">
               <span className={'badge ' + warnaStatus(l.status_laporan)}>{l.status_laporan}</span>
-              <Link href={`/uc08/${l.id}?jenis=${l.jenis}`}>Detail <img src="/uc08/8c878.svg" alt="" /></Link>
+              <Link className="flex items-center gap-1 text-xs font-semibold text-[#073a75] no-underline [&_img]:h-4 [&_img]:w-4" href={`/uc08/${l.id}?jenis=${l.jenis}`}>Detail <img src="/uc08/8c878.svg" alt="" /></Link>
             </div>
           </article>)}
-          {!daftar.length && <div className="uc08-kosong"><img src="/uc08/empty-reports.svg" alt="" /><p>Belum Ada Laporan</p></div>}
+          {!daftar.length && <div className="flex flex-col items-center gap-2.5 py-6 text-center text-[13px] text-gray-500 [&_img]:w-24"><img src="/uc08/empty-reports.svg" alt="" /><p>Belum Ada Laporan</p></div>}
         </>}
       </>}
     </section>
     <nav className="view-nav" aria-label="Navigasi">{NAV.map(([ikon, label, href]) =>
-      <Link key={label} href={href} className={label === 'Laporan' ? 'active' : ''}><img src={'/uc08/' + ikon} alt="" /><span>{label}</span></Link>)}
+      <Link key={label} href={href} className={'flex flex-1 flex-col items-center justify-center gap-[5px] text-[11px] no-underline ' + (label === 'Laporan' ? 'border-t-2 border-[#073a75] font-semibold text-[#073a75]' : 'text-gray-500')}><img src={'/uc08/' + ikon} alt="" /><span>{label}</span></Link>)}
     </nav>
   </main>;
 }

@@ -73,7 +73,7 @@ export default function HalamanNotifikasi() {
     <nav className="flex h-[72px] shrink-0 border-t border-[#dde1e7] bg-white" aria-label="Navigasi utama">
       {[
         { label: 'Beranda', href: '/', icon: '/icons/c9713.svg' },
-        { label: 'Laporan', href: '/uc05/laporan', icon: '/icons/d872e.svg' },
+        { label: 'Laporan', href: '/uc08', icon: '/icons/d872e.svg' },
         { label: 'Temuan', href: '/uc12', icon: '/icons/bf7bc.svg' },
         { label: 'Profil', href: '/uc02', icon: '/icons/5c528.svg' },
       ].map((item) => <Link key={item.label} href={item.href} className={'flex flex-1 flex-col items-center justify-center gap-1 text-[11px] no-underline ' + (item.label === 'Beranda' ? 'border-t-2 border-[#073a75] font-semibold text-[#073a75]' : 'text-gray-500')}><img className="h-[19px] w-[19px]" src={item.icon} alt="" /><span>{item.label}</span></Link>)}

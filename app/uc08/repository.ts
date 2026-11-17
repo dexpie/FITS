@@ -61,6 +61,6 @@ export function waktu(nilai: string): string {
 
 export function warnaStatus(status: string): string {
   if (status === 'Aktif' || status === 'Selesai' || status === 'Tersedia') return 'green';
-  if (status === 'Kadaluarsa' || status === 'Batal') return 'merah';
+  if (status === 'Kadaluarsa' || status === 'Batal') return 'bg-red-100 text-red-700';
   return 'yellow';
 }

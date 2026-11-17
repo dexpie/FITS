@@ -19,7 +19,7 @@ export default function Home() {
     <header className="home-header">
       <Link className="home-brand" href="/" aria-label="FITS Beranda">FITS</Link>
       <div className="home-tools">
-        <button type="button" aria-label="Notifikasi" className="home-icon-button"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg><i>3</i></button>
+        <Link href="/uc09" aria-label="Notifikasi" className="home-icon-button"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg></Link>
         <Link href="/uc02" aria-label="Profil" className="home-profile"><img src="/icons/5c528.svg" alt="" /></Link>
       </div>
     </header>
@@ -33,7 +33,7 @@ export default function Home() {
           <span className="action-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.2"/><path d="m16 16 5 5M8.5 8.5l4.6 4.6m0-4.6-4.6 4.6"/></svg></span>
           <strong>Lapor Hilang</strong><span>Kehilangan barang?<br />Laporkan di sini.</span>
         </Link>
-        <Link href="/uc12" className="home-action-card report-found">
+        <Link href="/uc07" className="home-action-card report-found">
           <span className="action-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 8 9-5 9 5-9 5-9-5Zm0 0v9l9 5 9-5V8M12 13v9m5-11v5l-2-1.2-2 1.2v-5"/></svg></span>
           <strong>Lapor Temuan</strong><span>Bantu kembalikan barang<br />yang kamu temukan.</span>
         </Link>

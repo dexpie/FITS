@@ -1,5 +1,7 @@
 'use client';
 
+import { ambilKlienSupabase } from '../../lib/supabase/klien';
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -128,6 +130,8 @@ export default function BarangTemuan() {
   // Alur UC-13: Menekan tombol "Ajukan Klaim". Setiap tahap pindah halaman lewat URL.
   async function handleAjukanKlaim() {
     if (!selected) return;
+    const { data: { user } } = await ambilKlienSupabase().auth.getUser();
+    if (!user) { router.push(`/uc02?next=${encodeURIComponent(`/uc12/${selected.id}`)}`); return; }
     const repo = ambilRepositori();
     const [laporan, klaimLama] = await Promise.all([repo.ambilLaporanPublik(selected.id), repo.cariKlaimDiajukan(selected.id)]);
     if (!laporan) return;

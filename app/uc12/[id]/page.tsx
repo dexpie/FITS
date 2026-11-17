@@ -8,6 +8,7 @@ import { formatTanggal, isDapatDiklaim } from '../../../lib/fits/laporan-temuan'
 import { ambilRepositori } from '../../../lib/fits/repositori';
 import type { InfoPublik } from '../../../lib/fits/tipe';
 import { KepalaHalaman, LencanaStatus, NavBawah, Pemberitahuan } from '../../komponen/umum';
+import { ambilKlienSupabase } from '../../../lib/supabase/klien';
 
 type Muatan = { info: InfoPublik; milikSendiri: boolean } | null | undefined; // undefined = masih memuat
 
@@ -24,6 +25,8 @@ export default function HalamanDetailBarang() {
 
   async function tekanTombolAjukanKlaim() {
     if (!muatan) return;
+    const { data: { user } } = await ambilKlienSupabase().auth.getUser();
+    if (!user) { router.push(`/uc02?next=${encodeURIComponent(`/uc12/${id}`)}`); return; }
     const klaimLama = await ambilRepositori().cariKlaimDiajukan(id);
     const periksa = periksaPengajuanKlaim({ statusLaporan: muatan.info.statusLaporan, milikSendiri: muatan.milikSendiri, klaimLama });
     if (periksa.hasil === 'milik-sendiri') setDitolakMilikSendiri(true);

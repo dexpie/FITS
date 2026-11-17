@@ -13,9 +13,9 @@ const TAB: { label: Tab; href: string; ikon: string }[] = [
 ];
 
 export function NavBawah({ aktif }: { aktif: Tab }) {
-  return <nav className="view-nav" aria-label="Navigasi utama">
-    {TAB.map(tab => <Link key={tab.label} href={tab.href} className={tab.label === aktif ? 'active' : ''} aria-current={tab.label === aktif ? 'page' : undefined}>
-      <img src={tab.ikon} alt="" />
+  return <nav className="flex h-[72px] shrink-0 border-t border-[#dde1e7] bg-white" aria-label="Navigasi utama">
+    {TAB.map(tab => <Link key={tab.label} href={tab.href} className={'flex flex-1 flex-col items-center justify-center gap-[5px] text-[11px] no-underline ' + (tab.label === aktif ? 'border-t-2 border-[#073a75] font-semibold text-[#073a75]' : 'text-gray-500')} aria-current={tab.label === aktif ? 'page' : undefined}>
+      <img className="h-[19px] w-[19px]" src={tab.ikon} alt="" />
       <span>{tab.label}</span>
     </Link>)}
   </nav>;
@@ -47,11 +47,12 @@ const IKON_NADA = {
 };
 
 export function Pemberitahuan({ nada = 'info', judul, children }: { nada?: keyof typeof IKON_NADA; judul?: string; children: ReactNode }) {
-  return <div className={`pemberitahuan nada-${nada}`} role={nada === 'info' ? 'note' : 'alert'}>
-    <img src={IKON_NADA[nada]} alt="" />
+  const warna = { info: 'border-[#bed0e4] bg-[#edf3fa] text-[#073a75]', bahaya: 'border-red-300 bg-[#fde8e8] text-red-800', peringatan: 'border-amber-300 bg-[#fff3d6] text-amber-800' };
+  return <div className={`flex w-full gap-2.5 rounded-xl border p-3 text-left text-[13px] leading-[18px] ${warna[nada]}`} role={nada === 'info' ? 'note' : 'alert'}>
+    <img className="mt-px h-5 w-5 shrink-0" src={IKON_NADA[nada]} alt="" />
     <div>
-      {judul && <strong>{judul}</strong>}
-      <p>{children}</p>
+      {judul && <strong className="mb-[3px] block text-sm">{judul}</strong>}
+      <p className="m-0">{children}</p>
     </div>
   </div>;
 }

@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-import { beforeEach, describe, expect, test } from 'vitest';
+import { createClient, type User } from '@supabase/supabase-js';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { RepositoriSupabase } from './repositori-supabase';
 
 // Klien Supabase asli, tetapi fetch-nya diganti peladen tiruan PostgREST, jadi test tidak menyentuh database.
@@ -25,17 +25,18 @@ const KLAIM_SERVER = {
 let rute: Record<string, (p: Permintaan) => Jawaban>;
 let riwayat: Permintaan[];
 
-function buatRepo() {
+function buatRepo(masuk = false) {
   const fetchTiruan = async (masukan: RequestInfo | URL, init?: RequestInit) => {
     const url = new URL(masukan instanceof Request ? masukan.url : String(masukan));
     const metode = init?.method ?? 'GET';
-    const permintaan = { metode, jalur: url.pathname, kueri: url.searchParams, badan: init?.body ? JSON.parse(String(init.body)) : null };
+    const permintaan = { metode, jalur: url.pathname, kueri: url.searchParams, badan: init?.body && !url.pathname.startsWith('/storage/') ? JSON.parse(String(init.body)) : null };
     riwayat.push(permintaan);
-    const penangan = rute[`${metode} ${url.pathname}`];
+    const penangan = rute[`${metode} ${url.pathname}`] ?? (url.pathname.startsWith('/storage/v1/object/bukti-klaim/') ? rute[`${metode} /storage/bukti-klaim`] : undefined);
     const jawaban = penangan ? penangan(permintaan) : { status: 404, isi: { message: `rute tiruan tidak ada: ${metode} ${url.pathname}` } };
     return new Response(JSON.stringify(jawaban.isi), { status: jawaban.status ?? 200, headers: { 'Content-Type': 'application/json' } });
   };
   const klien = createClient('https://fits.test', 'kunci-uji', { global: { fetch: fetchTiruan }, auth: { persistSession: false } });
+  if (masuk) vi.spyOn(klien.auth, 'getUser').mockResolvedValue({ data: { user: { id: 'user-uji' } as User }, error: null });
   return new RepositoriSupabase(klien);
 }
 
@@ -84,6 +85,11 @@ describe('detail laporan', () => {
     expect(riwayat.map(p => p.jalur)).toEqual(['/rest/v1/v_laporan_publik']);
   });
 
+  test('laporan milik pengguna dikenali lewat tabel yang dilindungi RLS', async () => {
+    rute['GET /rest/v1/laporan_temuan'] = () => ({ isi: [{ id: ID_LAPORAN }] });
+    expect(await buatRepo(true).ambilLaporanPublik(ID_LAPORAN)).toMatchObject({ milikSendiri: true });
+  });
+
   test('pertanyaan verifikasi datang berurutan tanpa jawaban rahasia', async () => {
     rute['GET /rest/v1/v_pertanyaan_publik'] = () => ({ isi: [
       { id: 'p2', id_laporan: ID_LAPORAN, urutan: 2, teks: 'Apa ciri bagian dalam dompet?' },
@@ -116,20 +122,31 @@ describe('klaim', () => {
 });
 
 describe('ajukanKlaim', () => {
-  test('mengirim jawaban dan metadata bukti ke fungsi ajukan_klaim_uc14', async () => {
+  test('akun yang belum masuk tidak dapat mengajukan klaim', async () => {
+    await expect(buatRepo().ajukanKlaim(ID_LAPORAN, {}, [])).rejects.toThrow('Silakan masuk');
+  });
+  test('mengirim jawaban ke fungsi ajukan_klaim_uc14', async () => {
     let badan: unknown;
     rute['POST /rest/v1/rpc/ajukan_klaim_uc14'] = p => { badan = p.badan; return { isi: KLAIM_SERVER }; };
-    const berkas = new Blob(['isi']);
-    const klaim = await buatRepo().ajukanKlaim(ID_LAPORAN, { p1: 'Putih' }, [{ jenis: 'Foto Lama Barang', namaBerkas: 'lama.jpg', tipeBerkas: 'image/jpeg', berkas }]);
+    const klaim = await buatRepo(true).ajukanKlaim(ID_LAPORAN, { p1: 'Putih' }, []);
     expect(badan).toEqual({
       p_id_laporan: ID_LAPORAN, p_jawaban: { p1: 'Putih' },
-      p_bukti: [{ jenis: 'Foto Lama Barang', namaBerkas: 'lama.jpg', tipeBerkas: 'image/jpeg' }],
+      p_bukti: [],
     });
     expect(klaim.waktuPengajuan).toBe('2026-09-22T02:00:00.000Z');
   });
 
+  test('mengunggah bukti dan mengirim lokasi berkas ke database', async () => {
+    rute['POST /storage/bukti-klaim'] = () => ({ isi: { Key: 'bukti-klaim/tersimpan' } });
+    let badan: unknown;
+    rute['POST /rest/v1/rpc/ajukan_klaim_uc14'] = p => { badan = p.badan; return { isi: KLAIM_SERVER }; };
+    const berkas = new Blob(['isi'], { type: 'image/jpeg' });
+    await buatRepo(true).ajukanKlaim(ID_LAPORAN, { p1: 'Putih' }, [{ jenis: 'Foto Lama Barang', namaBerkas: 'lama.jpg', tipeBerkas: 'image/jpeg', berkas }]);
+    expect(badan).toMatchObject({ p_bukti: [{ namaBerkas: 'lama.jpg', pathStorage: expect.stringMatching(/^user-uji\//) }] });
+  });
+
   test('penolakan dari database diteruskan apa adanya', async () => {
     rute['POST /rest/v1/rpc/ajukan_klaim_uc14'] = () => ({ status: 400, isi: { code: 'P0001', message: 'tidak-dapat-diklaim' } });
-    await expect(buatRepo().ajukanKlaim(ID_LAPORAN, {}, [])).rejects.toThrow('tidak-dapat-diklaim');
+    await expect(buatRepo(true).ajukanKlaim(ID_LAPORAN, {}, [])).rejects.toThrow('tidak-dapat-diklaim');
   });
 });

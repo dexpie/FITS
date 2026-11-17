@@ -19,7 +19,8 @@ function petakanInfoPublik(baris: BarisLaporanPublik): InfoPublik {
     lokasi: baris.lokasi,
     tanggalPenemuan: baris.tanggal_penemuan,
     statusLaporan: baris.status_laporan,
-    fotoBarang: baris.foto_barang,
+    // Foto yang masih berupa path Storage privat belum tersedia sebagai foto publik.
+    fotoBarang: /^(\/|https?:\/\/)/i.test(baris.foto_barang) ? baris.foto_barang : '/uc08/no-photo.svg',
     deskripsi: baris.deskripsi,
   };
 }
@@ -34,9 +35,7 @@ function periksa<T>(hasil: { data: T | null; error: { message: string } | null }
   return hasil.data as T;
 }
 
-// UC-12 dan UC-14 tanpa auth dan tanpa identitas pengguna: baca lewat view publik,
-// tulis lewat fungsi SQL security definer. Karena pengguna tidak dikenali, UC-13 Alternate 1
-// (milik sendiri) dan Alternate 2 (sudah diajukan) tidak pernah terjadi.
+// Daftar temuan dapat dibaca publik; klaim harus menggunakan akun yang masuk.
 export class RepositoriSupabase implements RepositoriFits {
   constructor(private klien: SupabaseClient) {}
 
@@ -63,7 +62,11 @@ export class RepositoriSupabase implements RepositoriFits {
 
   async ambilLaporanPublik(idLaporan: string) {
     const baris = await this.cariBarisLaporan(idLaporan);
-    return baris ? { info: petakanInfoPublik(baris), milikSendiri: false } : null;
+    if (!baris) return null;
+    const { data: { user } } = await this.klien.auth.getUser();
+    const milik = user ? await this.klien.from('laporan_temuan').select('id').eq('id', idLaporan).eq('id_pembuat', user.id).limit(1) : null;
+    if (milik?.error) throw new Error(milik.error.message);
+    return { info: petakanInfoPublik(baris), milikSendiri: !!milik?.data?.length };
   }
 
   async ambilPertanyaan(idLaporan: string): Promise<PertanyaanPublik[]> {
@@ -72,19 +75,37 @@ export class RepositoriSupabase implements RepositoriFits {
     return daftar.map(({ id, urutan, teks }) => ({ id, urutan, teks })).sort((a, b) => a.urutan - b.urutan);
   }
 
-  async cariKlaimDiajukan(_idLaporan: string): Promise<Klaim | null> {
-    return null;
+  async cariKlaimDiajukan(idLaporan: string): Promise<Klaim | null> {
+    const { data: { user } } = await this.klien.auth.getUser();
+    if (!user) return null;
+    const klaim = periksa(await this.klien.rpc('cari_klaim_saya_uc14', { p_id_laporan: idLaporan })) as Klaim | null;
+    return klaim ? petakanKlaim(klaim) : null;
   }
 
   // Pemeriksaan UC-14 (status laporan, kelengkapan jawaban, jenis berkas) dikerjakan ulang di database.
   async ajukanKlaim(idLaporan: string, jawaban: Record<string, string>, bukti: LampiranBukti[]) {
-    const klaim = periksa(await this.klien.rpc('ajukan_klaim_uc14', {
-      p_id_laporan: idLaporan,
-      p_jawaban: jawaban,
-      // Berkas belum diunggah ke Storage: yang disimpan baru metadatanya.
-      p_bukti: bukti.map(({ jenis, namaBerkas, tipeBerkas }) => ({ jenis, namaBerkas, tipeBerkas })),
-    })) as Klaim;
-    return petakanKlaim(klaim);
+    const { data: { user } } = await this.klien.auth.getUser();
+    if (!user) throw new Error('Silakan masuk terlebih dahulu untuk mengajukan klaim.');
+    const tersimpan: string[] = [];
+    try {
+      const lampiran = [];
+      for (const item of bukti) {
+        if (!item.berkas || item.berkas.size > 5 * 1024 * 1024) throw new Error('Berkas bukti wajib ada dan maksimal 5 MB.');
+        if (!item.tipeBerkas.startsWith('image/') && item.tipeBerkas !== 'application/pdf') throw new Error('Bukti harus berupa gambar atau PDF.');
+        const pathStorage = `${user.id}/${crypto.randomUUID()}`;
+        const { error } = await this.klien.storage.from('bukti-klaim').upload(pathStorage, item.berkas, { contentType: item.tipeBerkas });
+        if (error) throw new Error(error.message);
+        tersimpan.push(pathStorage);
+        lampiran.push({ jenis: item.jenis, namaBerkas: item.namaBerkas, tipeBerkas: item.tipeBerkas, pathStorage });
+      }
+      const klaim = periksa(await this.klien.rpc('ajukan_klaim_uc14', {
+        p_id_laporan: idLaporan, p_jawaban: jawaban, p_bukti: lampiran,
+      })) as Klaim;
+      return petakanKlaim(klaim);
+    } catch (error) {
+      if (tersimpan.length) await this.klien.storage.from('bukti-klaim').remove(tersimpan);
+      throw error;
+    }
   }
 
   async ambilDetailKlaim(nomorPengajuanKlaim: string): Promise<DetailKlaim | null> {

@@ -233,7 +233,7 @@ export default function BarangTemuan() {
           </div>
 
           <div className="temuan-count">
-            <span>MENAMPILKAN {visible.length} HASIL</span>
+            <span>{memuat ? 'MEMUAT BARANG...' : `MENAMPILKAN ${visible.length} HASIL`}</span>
             <button type="button" onClick={() => setNewest(!newest)}>
               {newest ? 'Terbaru' : 'Terlama'}{' '}
               <img src="/uc12/2636d.svg" alt="" className={newest ? '' : 'terbalik'} />

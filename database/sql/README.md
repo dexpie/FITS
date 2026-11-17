@@ -18,6 +18,7 @@ fungsi pencarian UC-06, dan migrasi berikut di riwayat Supabase:
 | `uc05_foto_storage.sql` | Bucket privat foto kehilangan |
 | `uc07_01_status_draf.sql`, `uc07_02_penyimpanan.sql` | Penyimpanan laporan temuan dan foto |
 | `integrasi_klaim_uc14.sql` | Identitas pengaju dan bukti klaim privat |
+| `integrasi_jadwal_uc09_uc10.sql` | Penjadwalan pemeriksaan setiap jam |
 
 `status_draf` dan `status_kadaluarsa` harus dijalankan dalam transaksi
 terpisah sebelum SQL yang memakai nilai enum baru. Migrasi SQL Editor lama
@@ -28,5 +29,5 @@ dipertahankan dengan kolom pemilik kosong. Jangan mengisi pemilik dengan
 tebakan. Klaim lama tidak dapat dilihat melalui fungsi klaim pengguna sampai
 pengajunya ditentukan dari data yang valid.
 
-Pemeriksaan berkala UC-09 dan UC-10 hanya terjadwal jika `pg_cron` aktif.
+`pg_cron` dan dua jadwal UC-09/UC-10 sudah aktif pada Project FITS.
 Pencatatan kecocokan pada pilihan "Ini Barang yang Sama" belum diimplementasi.

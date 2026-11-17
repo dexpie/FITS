@@ -91,6 +91,7 @@ begin
     select k.id, k.id_pembuat, k.barang_nama, k.created_at
     from public.laporan_kehilangan k
     where k.status_laporan::text = 'Aktif'
+      and ((select auth.uid()) is null or k.id_pembuat = (select auth.uid()))
       and k.tanggal_kadaluarsa - (now() at time zone 'Asia/Jakarta')::date between 0 and 3
       and not exists (
         select 1 from public.notifikasi n

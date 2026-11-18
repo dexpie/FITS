@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Tombol filter">
+<rect width="48" height="48" rx="8" fill="#073A75"/>
+<g id="Ikon">
+<path id="Garis ikon" d="M22.5 21H24M24 21H25.5M24 21V17.25M24 30.75V24M27.75 27H29.25M29.25 27H30.75M29.25 27V30.75M29.25 24V17.25M17.25 25.5H18.75M18.75 25.5H20.25M18.75 25.5V30.75M18.75 22.5V17.25" stroke-width="1.8" stroke-linecap="round" stroke="white"/>
+</g>
+<circle id="Indikator aktif" cx="40" cy="8" r="4.25" fill="#FFCC29" stroke-width="1.5" stroke="white"/>
+</g>
+</svg>

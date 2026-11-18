@@ -21,7 +21,8 @@ export default function Login() {
     }
     const { error } = await supabase.auth.signInWithPassword({ email, password: String(data.get('password') || '') });
     if (error) { setMessage('Login gagal. Periksa email dan kata sandi.'); return; }
-    router.push('/uc05');
+    const next = new URLSearchParams(window.location.search).get('next');
+    router.push(next && next.startsWith('/') && !next.startsWith('//') && !next.includes('\\') ? next : '/uc05');
   }
   return <main className="view-phone login-page">
     <header className="view-header"><a href="/" aria-label="Kembali"><img src="/uc02/5ce6a.svg" alt="" /></a><h1>Masuk ke Akun FITS</h1></header>

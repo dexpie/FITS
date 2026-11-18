@@ -1,17 +1,33 @@
 # Skrip SQL FITS
 
-Folder ini menyimpan skrip yang dijalankan secara manual melalui Supabase SQL Editor. File-file ini bukan riwayat migration Supabase CLI dan tidak otomatis dijalankan saat aplikasi dimulai. Skrip membuat objek baru, sehingga tidak aman untuk dijalankan ulang tanpa memeriksa database terlebih dahulu.
+Folder ini berisi SQL yang digunakan untuk integrasi database kelompok. Periksa
+riwayat migrasi dan struktur Project FITS sebelum menjalankan ulang: beberapa
+file memakai `create table` atau `create function` dan tidak dapat dijalankan
+ulang pada objek yang sudah ada. Database kosong juga memerlukan skema dasar
+UC-12/14 yang ada di `supabase/migrations`.
 
-Skrip bergantung pada struktur kelompok yang sudah ada, termasuk tabel `kategori`, `lokasi`, `pos_drop_off`, `laporan_temuan`, `pertanyaan_verifikasi`, tipe `status_laporan` dan `status_pertanyaan`, serta Supabase Auth dan Storage. Folder ini belum berisi skema dasar lengkap untuk membuat database FITS dari awal.
+Pada pemeriksaan 17 November 2026, Project FITS sudah memiliki tabel UC-05,
+fungsi pencarian UC-06, dan migrasi berikut di riwayat Supabase:
 
-| Urutan | File | Kegunaan | Status di Project FITS saat diperiksa pada 11 November 2026 |
-| --- | --- | --- | --- |
-| 1 | `uc05_laporan_kehilangan.sql` | Tabel laporan kehilangan dan kebijakan akses pemilik | Sudah dijalankan |
-| 2 | `uc06_pencarian_serupa.sql` | Fungsi pencarian laporan pasangan dengan hasil terbatas | Sudah dijalankan |
-| 3 | `uc07_01_status_draf.sql` | Menambahkan status Draf untuk pertanyaan verifikasi | Sudah dijalankan |
-| 4 | `uc07_02_penyimpanan.sql` | Penyimpanan laporan temuan, pertanyaan dan bucket foto | Sudah dijalankan setelah file nomor 3 |
-| 5 | `uc05_foto_storage.sql` | Bucket privat untuk foto laporan kehilangan | Belum terpasang saat pemeriksaan terakhir |
+| SQL | Keperluan |
+| --- | --- |
+| `uc01_daftar_akun.sql`, `uc09_notifikasi.sql` | Profil dan notifikasi |
+| `integrasi_pemilik_laporan_temuan.sql` | Kolom pemilik laporan temuan dan akses pemilik |
+| `uc08_laporan_saya.sql` | Daftar laporan dan riwayat |
+| `uc10_01_status_kadaluarsa.sql`, `uc10_02_perpanjang.sql` | Status dan perpanjangan laporan |
+| `uc05_foto_storage.sql` | Bucket privat foto kehilangan |
+| `uc07_01_status_draf.sql`, `uc07_02_penyimpanan.sql` | Penyimpanan laporan temuan dan foto |
+| `integrasi_klaim_uc14.sql` | Identitas pengaju dan bukti klaim privat |
+| `integrasi_jadwal_uc09_uc10.sql` | Penjadwalan pemeriksaan setiap jam |
 
-File nomor 3 dan 4 dijalankan terpisah; tunggu file nomor 3 selesai sebelum menjalankan file nomor 4. File nomor 4 membatasi akses langsung ke kolom jawaban rahasia pada `pertanyaan_verifikasi`, sehingga fitur lain yang membaca kolom itu perlu memakai mekanisme verifikasi yang sesuai.
+`status_draf` dan `status_kadaluarsa` harus dijalankan dalam transaksi
+terpisah sebelum SQL yang memakai nilai enum baru. Migrasi SQL Editor lama
+UC-05 dan UC-06 tidak selalu muncul pada riwayat migrasi Supabase CLI.
 
-Pencatatan kecocokan dan notifikasi untuk pilihan barang yang sama belum dicakup oleh skrip ini. Konfigurasi bucket foto kehilangan perlu diterapkan sebelum aplikasi dapat menyimpan laporan yang menyertakan foto; laporan tanpa foto tidak memerlukan bucket tersebut.
+Laporan temuan dan klaim lama yang belum punya informasi pemilik tetap
+dipertahankan dengan kolom pemilik kosong. Jangan mengisi pemilik dengan
+tebakan. Klaim lama tidak dapat dilihat melalui fungsi klaim pengguna sampai
+pengajunya ditentukan dari data yang valid.
+
+`pg_cron` dan dua jadwal UC-09/UC-10 sudah aktif pada Project FITS.
+Pencatatan kecocokan pada pilihan "Ini Barang yang Sama" belum diimplementasi.

@@ -64,6 +64,10 @@ export function FormVerifikasi({ barang, pertanyaan, onKirim }: Props) {
       setGalatBukti('Bukti Pendukung harus berupa gambar atau PDF.');
       return;
     }
+    if (f.size > 5 * 1024 * 1024) {
+      setGalatBukti('Ukuran bukti pendukung maksimal 5 MB.');
+      return;
+    }
     if (bukti?.urlPratinjau) URL.revokeObjectURL(bukti.urlPratinjau);
     const urlPratinjau = f.type.startsWith('image/') ? URL.createObjectURL(f) : undefined;
     setBukti({ jenis: jenisDipilih ?? tebakJenis(f.name), namaBerkas: f.name, tipeBerkas: f.type, berkas: f, urlPratinjau });
@@ -77,6 +81,7 @@ export function FormVerifikasi({ barang, pertanyaan, onKirim }: Props) {
   }
 
   async function kirimJawaban() {
+    if (sedangKirim) return;
     // UC-14 Alternate 3: Isian yang kosong ditolak dan ditandai
     const belumDiisi = new Set(pertanyaan.filter(p => !jawaban[p.id]?.trim()).map(p => p.id));
     setKosong(belumDiisi);

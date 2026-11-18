@@ -1,94 +1,371 @@
-.temuan-page{position:relative}
-.temuan-content{flex:1;display:flex;flex-direction:column}
+@reference "../tailwind.css";
+
+.temuan-page {
+  @apply relative;
+}
+
+.temuan-content {
+  @apply flex-1 flex flex-col;
+}
 
 /* Pencarian + chip kriteria aktif */
-.area-filter{display:flex;flex-direction:column;gap:12px;padding:16px 20px 12px}
-.search-row{display:flex;gap:8px}
-.search-box{height:48px;flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:0 12px;border:1px solid #c2c6d3;border-radius:8px;background:#fff}
-.search-box img{width:18px;height:18px;flex-shrink:0}
-.search-box input:not(.file){height:44px;border:0;margin:0;padding:0;outline:0;font-size:14px;color:#1f2937;flex:1;min-width:0;background:transparent}
-.search-box input::placeholder{color:#6b7280}
-.search-box .hapus-cari{border:0;background:none;color:#6b7280;font-size:20px;line-height:1;cursor:pointer;padding:0}
-.filter-toggle{width:48px;height:48px;flex-shrink:0;border:0;padding:0;border-radius:8px;background:#073a75;display:grid;place-items:center;cursor:pointer}
-.filter-toggle img{width:18px;height:18px}
-.filter-toggle.aktif{background:transparent}
-.filter-toggle.aktif img{width:48px;height:48px}
-.chip-aktif{display:flex;flex-wrap:wrap;gap:8px}
-.chip-aktif button{height:32px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;background:#073a75;border:1px solid #073a75;border-radius:999px;color:#fff;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer}
-.chip-aktif button span{font-size:14px;font-weight:700;line-height:1}
+
+.area-filter {
+  @apply flex flex-col gap-3 pt-4 px-5 pb-3;
+}
+
+.search-row {
+  @apply flex gap-2;
+}
+
+.search-box {
+  @apply h-12 flex-1 min-w-0 flex items-center gap-2.5 py-0 px-3 border border-solid border-[#c2c6d3]
+     rounded-lg bg-white;
+}
+
+.search-box img {
+  @apply w-4.5 h-4.5 shrink-0;
+}
+
+.search-box input:not(.file) {
+  @apply h-11 border-0 m-0 p-0 outline-none text-[14px] text-[#1f2937] flex-1 min-w-0 bg-transparent;
+}
+
+.search-box input::placeholder {
+  @apply text-[#6b7280];
+}
+
+.search-box .hapus-cari {
+  @apply border-0 bg-transparent text-[#6b7280] text-[20px] leading-none cursor-pointer p-0;
+}
+
+.filter-toggle {
+  @apply w-12 h-12 shrink-0 border-0 p-0 rounded-lg bg-[#073a75] grid place-items-center cursor-pointer;
+}
+
+.filter-toggle img {
+  @apply w-4.5 h-4.5;
+}
+
+.filter-toggle.aktif {
+  @apply bg-transparent;
+}
+
+.filter-toggle.aktif img {
+  @apply w-12 h-12;
+}
+
+.chip-aktif {
+  @apply flex flex-wrap gap-2;
+}
+
+.chip-aktif button {
+  @apply h-8 inline-flex items-center gap-1.5 py-0 px-3 bg-[#073a75] border border-solid border-[#073a75]
+     rounded-full text-white text-[12px] font-semibold whitespace-nowrap cursor-pointer;
+}
+
+.chip-aktif button span {
+  @apply text-[14px] font-bold leading-none;
+}
 
 /* Ringkasan hasil & daftar */
-.temuan-count{height:44px;flex-shrink:0;padding:0 20px;display:flex;align-items:center;justify-content:space-between;color:#4b5563;font-size:12px;font-weight:600}
-.temuan-count button{display:flex;gap:4px;align-items:center;border:0;padding:0;background:none;color:#073a75;font-weight:600;font-size:12px;cursor:pointer}
-.temuan-count img{width:12px;height:12px}
-.temuan-count img.terbalik{transform:rotate(180deg)}
-.temuan-list{display:flex;flex-direction:column;gap:12px;padding:0 20px 16px}
-.found-card{height:132px;flex-shrink:0;display:flex;background:white;border:1px solid #dde1e7;border-radius:12px;overflow:hidden;box-shadow:0 1px 2px #0000000d}
-.found-photo{width:104px;height:100%;object-fit:cover;flex-shrink:0}
-.found-body{flex:1;min-width:0;padding:12px;display:flex;flex-direction:column;justify-content:space-between}
-.found-body>div:first-child{display:flex;flex-direction:column;gap:3px;min-width:0}
-.found-body h2{font-size:15px;line-height:20px;font-weight:600;color:#1f2937;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.found-body p,.found-body strong{font-size:11px;line-height:15px;margin:0;color:#6b7280;font-weight:400}
-.found-body .found-kategori{line-height:14px}
-.found-body strong{color:#4b5563;font-weight:600}
-.found-actions{display:flex;justify-content:space-between;align-items:center;gap:4px}
-.found-status{display:inline-block;border-radius:999px;padding:4px 7px;font-size:9px;line-height:12px;font-weight:600;white-space:nowrap}
-.available{background:#dcfce7;color:#166534}
-.finished{background:#e5e7eb;color:#4b5563}
-.pending{background:#fef3c7;color:#92400e}
-.menunggu-penyerahan{background:#ffcc29;color:#1f2937}
-.found-actions button,.found-actions a,.found-actions .tombol-detail{height:30px;width:60px;flex-shrink:0;padding:0 12px;background:#ffcc29;border:0;border-radius:8px;font-size:12px;font-weight:700;color:#1f2937;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer}
-.found-actions .tombol-detail.garis{background:#fff;border:1px solid #073a75;color:#073a75}
+
+.temuan-count {
+  @apply h-11 shrink-0 py-0 px-5 flex items-center justify-between text-[#4b5563] text-[12px]
+     font-semibold;
+}
+
+.temuan-count button {
+  @apply flex gap-1 items-center border-0 p-0 bg-transparent text-[#073a75] font-semibold text-[12px]
+     cursor-pointer;
+}
+
+.temuan-count img {
+  @apply w-3 h-3;
+}
+
+.temuan-count img.terbalik {
+  transform:rotate(180deg);
+}
+
+.temuan-list {
+  @apply flex flex-col gap-3 pt-0 px-5 pb-4;
+}
+
+.found-card {
+  @apply h-33 shrink-0 flex bg-white border border-solid border-[#dde1e7] rounded-xl overflow-hidden;
+  box-shadow:0 1px 2px #0000000d;
+}
+
+.found-photo {
+  @apply w-26 h-full object-cover shrink-0;
+}
+
+.found-body {
+  @apply flex-1 min-w-0 p-3 flex flex-col justify-between;
+}
+
+.found-body>div:first-child {
+  @apply flex flex-col gap-[3px] min-w-0;
+}
+
+.found-body h2 {
+  @apply text-[15px] leading-[20px] font-semibold text-[#1f2937] m-0 overflow-hidden text-ellipsis
+     whitespace-nowrap;
+}
+
+.found-body p,
+.found-body strong {
+  @apply text-[11px] leading-[15px] m-0 text-[#6b7280] font-normal;
+}
+
+.found-body .found-kategori {
+  @apply leading-[14px];
+}
+
+.found-body strong {
+  @apply text-[#4b5563] font-semibold;
+}
+
+.found-actions {
+  @apply flex justify-between items-center gap-1;
+}
+
+.found-status {
+  @apply inline-block rounded-full py-1 px-[7px] text-[9px] leading-[12px] font-semibold whitespace-nowrap;
+}
+
+.available {
+  @apply bg-[#dcfce7] text-[#166534];
+}
+
+.finished {
+  @apply bg-[#e5e7eb] text-[#4b5563];
+}
+
+.pending {
+  @apply bg-[#fef3c7] text-[#92400e];
+}
+
+.menunggu-penyerahan {
+  @apply bg-[#ffcc29] text-[#1f2937];
+}
+
+.found-actions button,
+.found-actions a,
+.found-actions .tombol-detail {
+  @apply h-7.5 w-15 shrink-0 py-0 px-3 bg-[#ffcc29] border-0 rounded-lg text-[12px] font-bold
+     text-[#1f2937] inline-flex items-center justify-center no-underline cursor-pointer;
+}
+
+.found-actions .tombol-detail.garis {
+  @apply bg-white border border-solid border-[#073a75] text-[#073a75];
+}
 
 /* Keadaan kosong (UC-12 Alternate 3) */
-.hasil-kosong{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px 40px;gap:20px}
-.hasil-kosong-ikon{width:100px;height:100px;border-radius:999px;background:#edf3fa;display:grid;place-items:center;flex-shrink:0}
-.hasil-kosong-ikon img{width:44px;height:44px}
-.hasil-kosong-pesan{display:flex;flex-direction:column;gap:8px;width:100%}
-.hasil-kosong h2{font-size:20px;line-height:26px;font-weight:700;color:#1f2937;margin:0}
-.hasil-kosong p{font-size:14px;line-height:21px;color:#6b7280;margin:0}
-.hasil-kosong button,.hasil-kosong a{width:100%;height:48px;padding:0 12px;background:#ffcc29;border:0;border-radius:8px;font-size:14px;font-weight:700;color:#1f2937;display:flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer}
+
+.hasil-kosong {
+  @apply flex-1 flex flex-col items-center justify-center text-center pt-0 px-6 pb-10 gap-5;
+}
+
+.hasil-kosong-ikon {
+  @apply w-25 h-25 rounded-full bg-[#edf3fa] grid place-items-center shrink-0;
+}
+
+.hasil-kosong-ikon img {
+  @apply w-11 h-11;
+}
+
+.hasil-kosong-pesan {
+  @apply flex flex-col gap-2 w-full;
+}
+
+.hasil-kosong h2 {
+  @apply text-[20px] leading-[26px] font-bold text-[#1f2937] m-0;
+}
+
+.hasil-kosong p {
+  @apply text-[14px] leading-[21px] text-[#6b7280] m-0;
+}
+
+.hasil-kosong button,
+.hasil-kosong a {
+  @apply w-full h-12 py-0 px-3 bg-[#ffcc29] border-0 rounded-lg text-[14px] font-bold text-[#1f2937] flex
+     items-center justify-center no-underline cursor-pointer;
+}
 
 /* Detail Barang */
-.found-detail{padding:16px 20px;gap:14px}
-.found-hero{width:100%;height:200px;object-fit:cover;border-radius:12px;flex-shrink:0}
-.found-detail>div:first-of-type{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
-.found-detail h2{font-size:22px;line-height:28px;font-weight:700;color:#1f2937;margin:0}
-.found-detail .found-status{font-size:12px;line-height:16px;padding:5px 10px}
-.found-info{background:white;border:1px solid #dde1e7;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px}
-.found-info div:not(.found-info-row){display:flex;flex-direction:column;gap:4px;min-width:0}
-.found-info-row{display:flex;gap:14px}
-.found-info-row div{flex:1}
-.found-info span{font-size:12px;line-height:15px;color:#6b7280}
-.found-info strong{font-size:14px;line-height:19px;font-weight:600;color:#1f2937}
-.found-description,.found-description p{font-size:13px;line-height:18px;color:#6b7280;margin:0}
-.found-description strong{font-size:14px;font-weight:600;color:#1f2937}
-.found-description p{margin-top:6px}
-.actions button:disabled{background:#e5e7eb;color:#6b7280;cursor:not-allowed}
+
+.found-detail {
+  @apply py-4 px-5 gap-3.5;
+}
+
+.found-hero {
+  @apply w-full h-50 object-cover rounded-xl shrink-0;
+}
+
+.found-detail>div:first-of-type {
+  @apply flex flex-col items-start gap-2;
+}
+
+.found-detail h2 {
+  @apply text-[22px] leading-[28px] font-bold text-[#1f2937] m-0;
+}
+
+.found-detail .found-status {
+  @apply text-[12px] leading-[16px] py-[5px] px-2.5;
+}
+
+.found-info {
+  @apply bg-white border border-solid border-[#dde1e7] rounded-xl p-3.5 flex flex-col gap-3;
+}
+
+.found-info div:not(.found-info-row) {
+  @apply flex flex-col gap-1 min-w-0;
+}
+
+.found-info-row {
+  @apply flex gap-3.5;
+}
+
+.found-info-row div {
+  @apply flex-1;
+}
+
+.found-info span {
+  @apply text-[12px] leading-[15px] text-[#6b7280];
+}
+
+.found-info strong {
+  @apply text-[14px] leading-[19px] font-semibold text-[#1f2937];
+}
+
+.found-description,
+.found-description p {
+  @apply text-[13px] leading-[18px] text-[#6b7280] m-0;
+}
+
+.found-description strong {
+  @apply text-[14px] font-semibold text-[#1f2937];
+}
+
+.found-description p {
+  @apply mt-1.5;
+}
+
+.actions button:disabled {
+  @apply bg-[#e5e7eb] text-[#6b7280] cursor-not-allowed;
+}
 
 /* Panel filter: latar gelap & bottom sheet */
-.filter-overlay{position:absolute;inset:0;background:#07192ccc;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:flex-end;z-index:5}
-.filter-sheet{width:100%;height:660px;max-height:85%;overflow:auto;background:white;border-radius:24px 24px 0 0;display:flex;flex-direction:column}
-.filter-handle{height:28px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.filter-handle span{width:48px;height:5px;background:#d1d5db;border-radius:999px}
-.filter-heading{height:40px;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding:0 20px 12px}
-.filter-heading h2{font-size:20px;font-weight:700;color:#1f2937;margin:0}
-.filter-heading button{border:0;padding:0;background:none;font-size:22px;font-weight:400;line-height:1;color:#6b7280;cursor:pointer}
-.filter-fields{padding:0 20px 16px;display:flex;flex-direction:column;gap:20px;flex:1}
-.filter-fields>div{display:flex;flex-direction:column;gap:10px}
-.filter-fields h3{font-size:14px;line-height:20px;font-weight:700;color:#1f2937;margin:0}
-.filter-fields .pills{gap:8px}
-.filter-fields .pills button{height:32px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;background:#fff;border:1px solid #c2c6d3;border-radius:999px;color:#4b5563;font-size:12px;line-height:normal;font-weight:500;white-space:nowrap;cursor:pointer}
-.filter-fields .pills button.chosen{background:#073a75;border-color:#073a75;color:#fff;font-weight:600}
-.filter-fields .pills button span{font-size:14px;font-weight:700;line-height:1}
-.filter-fields select{width:100%;height:44px;border:1px solid #c2c6d3;border-radius:8px;background:#fff url(/uc12/panah-dropdown.svg) no-repeat right 16px center/12px 12px;padding:0 40px 0 16px;font:14px Inter,Arial,sans-serif;color:#6b7280;appearance:none;-webkit-appearance:none;cursor:pointer}
-.filter-fields select:focus-visible,.input-tanggal:focus-within{outline:none;border-color:#073a75;box-shadow:0 0 0 1px #073a75}
-.date-row{display:flex;gap:8px}
-.input-tanggal{position:relative;flex:1;min-width:0;height:40px;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 12px;border:1px solid #c2c6d3;border-radius:8px;background:#fff;font-size:12px;font-weight:400;color:#4b5563;cursor:pointer}
-.input-tanggal span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.input-tanggal span.terisi{color:#1f2937}
-.input-tanggal img{width:15px;height:15px;flex-shrink:0}
-.input-tanggal input:not(.file){position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;cursor:pointer}
-.filter-actions{height:80px;flex-shrink:0;display:flex;gap:12px;border-top:1px solid #dde1e7;padding:16px;background:#fff}
-.filter-actions button{height:48px;width:88px;flex-shrink:0;border:1px solid #073a75;background:white;border-radius:8px;color:#073a75;font-size:14px;font-weight:700;padding:0 12px;cursor:pointer}
-.filter-actions button:last-child{flex:1;width:auto;background:#ffcc29;border:0;color:#1f2937}
+
+.filter-overlay {
+  @apply fixed inset-y-0 left-1/2 z-5 flex w-full max-w-[390px] -translate-x-1/2 items-end
+    bg-[#07192ccc] backdrop-blur-[4px];
+}
+
+.filter-sheet {
+  @apply w-full h-165 max-h-[85%] overflow-auto bg-white rounded-t-3xl flex flex-col;
+}
+
+.filter-handle {
+  @apply h-7 shrink-0 flex items-center justify-center;
+}
+
+.filter-handle span {
+  @apply w-12 h-[5px] bg-[#d1d5db] rounded-full;
+}
+
+.filter-heading {
+  @apply h-10 shrink-0 flex justify-between items-center pt-0 px-5 pb-3;
+}
+
+.filter-heading h2 {
+  @apply text-[20px] font-bold text-[#1f2937] m-0;
+}
+
+.filter-heading button {
+  @apply border-0 p-0 bg-transparent text-[22px] font-normal leading-none text-[#6b7280] cursor-pointer;
+}
+
+.filter-fields {
+  @apply pt-0 px-5 pb-4 flex flex-col gap-5 flex-1;
+}
+
+.filter-fields>div {
+  @apply flex flex-col gap-2.5;
+}
+
+.filter-fields h3 {
+  @apply text-[14px] leading-[20px] font-bold text-[#1f2937] m-0;
+}
+
+.filter-fields .pills {
+  @apply gap-2;
+}
+
+.filter-fields .pills button {
+  @apply h-8 inline-flex items-center gap-1.5 py-0 px-3 bg-white border border-solid border-[#c2c6d3]
+     rounded-full text-[#4b5563] text-[12px] leading-normal font-medium whitespace-nowrap cursor-pointer;
+}
+
+.filter-fields .pills button.chosen {
+  @apply bg-[#073a75] border-[#073a75] text-white font-semibold;
+}
+
+.filter-fields .pills button span {
+  @apply text-[14px] font-bold leading-none;
+}
+
+.filter-fields select {
+  @apply w-full h-11 border border-solid border-[#c2c6d3] rounded-lg [padding:0_40px_0_16px]
+     text-[#6b7280] appearance-none cursor-pointer;
+  background:#fff url(/uc12/panah-dropdown.svg) no-repeat right 16px center/12px 12px;
+  font:14px Inter,Arial,sans-serif;
+  -webkit-appearance:none;
+}
+
+.filter-fields select:focus-visible,
+.input-tanggal:focus-within {
+  @apply outline-none border-[#073a75];
+  box-shadow:0 0 0 1px #073a75;
+}
+
+.date-row {
+  @apply flex gap-2;
+}
+
+.input-tanggal {
+  @apply relative flex-1 min-w-0 h-10 flex items-center justify-between gap-1.5 py-0 px-3 border
+     border-solid border-[#c2c6d3] rounded-lg bg-white text-[12px] font-normal text-[#4b5563]
+     cursor-pointer;
+}
+
+.input-tanggal span {
+  @apply whitespace-nowrap overflow-hidden text-ellipsis;
+}
+
+.input-tanggal span.terisi {
+  @apply text-[#1f2937];
+}
+
+.input-tanggal img {
+  @apply w-[15px] h-[15px] shrink-0;
+}
+
+.input-tanggal input:not(.file) {
+  @apply absolute inset-0 w-full h-full m-0 p-0 border-0 opacity-0 cursor-pointer;
+}
+
+.filter-actions {
+  @apply h-20 shrink-0 flex gap-3 [border-top:1px_solid_#dde1e7] p-4 bg-white;
+}
+
+.filter-actions button {
+  @apply h-12 w-22 shrink-0 border border-solid border-[#073a75] bg-white rounded-lg text-[#073a75]
+     text-[14px] font-bold py-0 px-3 cursor-pointer;
+}
+
+.filter-actions button:last-child {
+  @apply flex-1 w-auto bg-[#ffcc29] border-0 text-[#1f2937];
+}

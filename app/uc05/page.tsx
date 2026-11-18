@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { supabase } from '../supabase';
 import BarangSerupa from '../uc06/BarangSerupa';
+import { NavBawah } from '../komponen/umum';
 
 const icons = '/icons/';
 
@@ -83,7 +84,7 @@ export default function Home() {
   }
 
   return <main className="phone">
-    <header>{step === 4 ? <Link href="/" aria-label="Kembali ke beranda"><img src={icons + '5ce6a.svg'} alt="" /></Link> : <button className="back" type="button" aria-label="Kembali" disabled={saving} onClick={() => { setStep(Math.max(1, step - 1)); setNotice(''); }}><img src={icons + '5ce6a.svg'} alt="" /></button>}<h1>{step === 3 ? 'Barang Serupa' : step === 4 ? 'Laporan Berhasil' : 'Lapor Hilang'}</h1></header>
+    <header>{step === 1 || step === 4 ? <Link className="back" href="/" aria-label="Kembali ke beranda"><img src={icons + '5ce6a.svg'} alt="" /></Link> : <button className="back" type="button" aria-label="Kembali" disabled={saving} onClick={() => { setStep(step - 1); setNotice(''); }}><img src={icons + '5ce6a.svg'} alt="" /></button>}<h1>{step === 3 ? 'Barang Serupa' : step === 4 ? 'Laporan Berhasil' : 'Lapor Hilang'}</h1></header>
     <form ref={formRef} onSubmit={lanjut}>
       <div className="content" hidden={step !== 1}>
         <div className="progress"><div className="steps"><span className="active">1</span><span>2</span><span>3</span></div><strong>LANGKAH 1 DARI 3 - DATA BARANG</strong></div>
@@ -115,6 +116,6 @@ export default function Home() {
       </div>}
       <div className={step === 4 ? 'actions success-actions' : 'actions'}>{notice && <p className="notice" role="status">{notice} {notice.startsWith('Silakan masuk') && <Link href="/uc02">Masuk</Link>}</p>}{step === 2 && <p className="hint">Selanjutnya memeriksa barang serupa sebelum laporan disimpan.</p>}{step < 3 ? <button type="submit" disabled={saving}>LANJUT</button> : step === 4 ? <><Link className="success-action-primary" href="/uc08">Lihat Laporan</Link><Link className="success-action-secondary" href="/">Kembali ke Beranda</Link></> : saving && <p className="hint">Menyimpan laporan...</p>}</div>
     </form>
-    <nav aria-label="Navigasi utama">{[['c9713','Beranda'],['d872e','Laporan'],['bf7bc','Temuan'],['5c528','Profil']].map(([icon, label]) => <div key={label} className={label === 'Laporan' ? 'current' : ''}><img src={icons + icon + '.svg'} alt="" /><span>{label}</span></div>)}</nav>
+    <NavBawah aktif="Laporan" />
   </main>;
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { supabase } from '../supabase';
 
 type Hasil = { id: string; barang_kategori: string; lokasi: string; tanggal: string | null };
@@ -11,6 +12,7 @@ export default function BarangSerupa({ nama, kategori, lokasi, asal, onLanjut, o
   onLanjut: () => void; onPilih: (id: string) => void;
   sibuk?: boolean;
 }) {
+  const pathname = usePathname();
   const [hasil, setHasil] = useState<Hasil[]>([]);
   const [pesan, setPesan] = useState('Mencari barang serupa...');
   const [siap, setSiap] = useState(false);
@@ -38,7 +40,7 @@ export default function BarangSerupa({ nama, kategori, lokasi, asal, onLanjut, o
   }, [nama, kategori, lokasiKey, asal]);
 
   return <div className="similar-results">
-    {pesan && <p className="intro" role="status">{pesan} {pesan.startsWith('Masuk terlebih dahulu') && <Link href="/uc02">Masuk</Link>}</p>}
+    {pesan && <p className="intro" role="status">{pesan} {pesan.startsWith('Masuk terlebih dahulu') && <Link href={`/uc02?next=${encodeURIComponent(pathname)}`}>Masuk</Link>}</p>}
     {hasil.map(item => <article className="similar-card" key={item.id}>
       <div className="similar-photo" aria-label="Foto belum tersedia">▧</div>
       <div className="similar-info"><div><strong>{item.barang_kategori}</strong><p>{item.lokasi}</p><p>{item.tanggal || 'Tanggal tidak tersedia'}</p></div>

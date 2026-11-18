@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '../supabase';
+import { kunciLoginBeranda, supabase } from '../supabase';
 
 export default function Login() {
   const router = useRouter();
@@ -19,10 +19,12 @@ export default function Login() {
       setMessage('Gunakan email ITS (@its.ac.id atau @mhs.its.ac.id).');
       return;
     }
-    const { error } = await supabase.auth.signInWithPassword({ email, password: String(data.get('password') || '') });
-    if (error) { setMessage('Login gagal. Periksa email dan kata sandi.'); return; }
+    const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password: String(data.get('password') || '') });
+    if (error || !user) { setMessage('Login gagal. Periksa email dan kata sandi.'); return; }
     const next = new URLSearchParams(window.location.search).get('next');
-    router.push(next && next.startsWith('/') && !next.startsWith('//') && !next.includes('\\') ? next : '/uc05');
+    const tujuan = next && /^\/(?![/\\])/.test(next) && !/[\\\s]/.test(next) ? next : '/';
+    if (tujuan === '/') sessionStorage.setItem(kunciLoginBeranda, user.id);
+    router.replace(tujuan);
   }
   return <main className="view-phone login-page">
     <header className="view-header"><a href="/" aria-label="Kembali"><img src="/uc02/5ce6a.svg" alt="" /></a><h1>Masuk ke Akun FITS</h1></header>

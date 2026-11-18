@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { SapaanBeranda } from './komponen/sapaan-beranda';
 import './home.css';
 
 const recentFinds = [
@@ -25,8 +26,7 @@ export default function Home() {
     </header>
 
     <section className="home-content">
-      <div className="home-greeting"><h1>Halo, Yossi!</h1><p>Selamat datang kembali di FITS.</p></div>
-      <p className="home-success"><span aria-hidden="true">✓</span>Kamu berhasil masuk ke akun FITS.</p>
+      <SapaanBeranda />
 
       <div className="home-actions">
         <Link href="/uc05" className="home-action-card report-lost">
@@ -50,7 +50,7 @@ export default function Home() {
     </section>
 
     <nav className="home-nav" aria-label="Navigasi utama">
-      {navigation.map(item => <Link href={item.href} key={item.label} className={item.active ? 'active' : ''}>
+      {navigation.map(item => <Link href={item.href} key={item.label} className={item.active ? 'active' : ''} aria-current={item.active ? 'page' : undefined}>
         <img src={item.icon} alt="" /><span>{item.label}</span>
       </Link>)}
     </nav>

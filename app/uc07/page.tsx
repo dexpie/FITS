@@ -3,10 +3,10 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import BarangSerupa from '../uc06/BarangSerupa';
+import { NavBawah } from '../komponen/umum';
 import { supabase } from '../supabase';
 
 const categories = ['Elektronik', 'Dompet/KTP', 'Kunci', 'Lainnya'];
-const nav = [['c9713', 'Beranda', '/'], ['d872e', 'Laporan', '/uc08'], ['bf7bc', 'Temuan', '/uc12'], ['5c528', 'Profil', '/uc02']];
 
 export default function LaporTemuan() {
   const [step, setStep] = useState(1);
@@ -71,7 +71,7 @@ export default function LaporTemuan() {
     const next = [...values]; next[index] = value; set(next);
   }
   return <main className="phone">
-    <header><button className="back" type="button" aria-label="Kembali" onClick={() => { if (step === 5) return; setStep(Math.max(1, step - 1)); setNotice(''); }}><img src="/icons/5ce6a.svg" alt="" /></button><h1>{step === 4 ? 'Barang Serupa' : step === 5 ? 'Laporan Berhasil' : 'Lapor Temuan'}</h1></header>
+    <header>{step === 1 || step === 5 ? <Link className="back" href="/" aria-label="Kembali ke beranda"><img src="/icons/5ce6a.svg" alt="" /></Link> : <button className="back" type="button" aria-label="Kembali" disabled={saving} onClick={() => { setStep(step - 1); setNotice(''); }}><img src="/icons/5ce6a.svg" alt="" /></button>}<h1>{step === 4 ? 'Barang Serupa' : step === 5 ? 'Laporan Berhasil' : 'Lapor Temuan'}</h1></header>
     <form onSubmit={lanjut}>
       {step < 4 && <div className="content">
         <div className="progress"><div className="steps">{[1,2,3].map(n => <span key={n} className={step === n ? 'active' : ''}>{n}</span>)}</div><strong>LANGKAH {step} DARI 3 - {step === 1 ? 'DATA BARANG' : step === 2 ? 'LOKASI PENEMUAN' : 'PERTANYAAN VERIFIKASI'}</strong></div>
@@ -91,6 +91,6 @@ export default function LaporTemuan() {
       {step === 5 && saved && <div className="content result report-preview"><div className="success-ring"><div className="success-icon"><img src="/icons/24f50.svg" alt="" /></div></div><h2 className="success-title">Laporan Temuan Berhasil Dibuat</h2><div className="summary"><strong>Ringkasan Laporan</strong><span className="status">Menunggu Penyerahan</span><dl><dt>Nama barang</dt><dd>{name}</dd><dt>Nomor laporan</dt><dd>{saved.nomor_laporan}</dd><dt>Pertanyaan verifikasi</dt><dd>Draf</dd><dt>Pos Drop-off</dt><dd>{saved.pos_nama}</dd><dt>Batas penyerahan</dt><dd>{new Date(saved.batas_penyerahan).toLocaleString('id-ID', {timeZone:'Asia/Jakarta'})} WIB</dd></dl></div><Link href="/">Kembali ke Beranda</Link></div>}
       <div className="actions">{notice && <p className="notice" role="status">{notice}</p>}{step < 4 && <button type="submit">LANJUT</button>}</div>
     </form>
-    <nav aria-label="Navigasi utama">{nav.map(([icon, label, href]) => <div key={label} className={label === 'Laporan' ? 'current' : ''}><Link href={href}><img src={'/icons/' + icon + '.svg'} alt="" /><span>{label}</span></Link></div>)}</nav>
+    <NavBawah aktif="Laporan" />
   </main>;
 }

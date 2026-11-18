@@ -101,6 +101,6 @@ export default function LaporanSaya() {
       <article className="detail-card history-card"><h2>Riwayat Status</h2><div className="history-item"><img src="/uc08/92b85.svg" alt="" /><div><strong>Laporan Dibuat</strong><p>{tanggalLabel(selected.created_at)} — Pengguna</p></div></div></article>
     </section>}
 
-    <nav className="view-nav" aria-label="Navigasi">{nav.map(([icon, label, href]) => <div key={label} className={label === 'Laporan' ? 'active' : ''}><Link href={href}><img src={'/uc08/' + icon} alt="" /><span>{label}</span></Link></div>)}</nav>
+    <nav className="view-nav" aria-label="Navigasi utama">{nav.map(([icon, label, href]) => <Link key={label} href={href} className={label === 'Laporan' ? 'active' : ''} aria-current={label === 'Laporan' ? 'page' : undefined}><img src={'/uc08/' + icon} alt="" /><span>{label}</span></Link>)}</nav>
   </main>;
 }

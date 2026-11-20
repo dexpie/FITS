@@ -1,4 +1,6 @@
 -- Integrasi klaim dengan akun FITS; data lama tanpa pengaju tetap dipertahankan.
+-- Butuh riwayat_status_laporan (uc08_laporan_saya.sql) dan buat_notifikasi (uc09_notifikasi.sql).
+-- Aman dijalankan ulang: semua perintah memakai if not exists, on conflict, drop if exists, atau create or replace.
 begin;
 alter table public.klaim add column if not exists id_pengaju uuid references auth.users(id);
 insert into storage.buckets (id, name, public, file_size_limit)
@@ -114,7 +116,19 @@ begin
     select v_id_klaim, (b ->> 'jenis')::public.jenis_bukti, b ->> 'namaBerkas', b ->> 'tipeBerkas', b ->> 'pathStorage'
     from jsonb_array_elements(v_bukti) b;
 
+  -- UC-13: ubahStatus(Menunggu Verifikasi, null) lalu catatRiwayat("Klaim diajukan", null, null). Pengubah kosong = Sistem.
   update public.laporan_temuan set status_laporan = 'Menunggu Verifikasi' where id = p_id_laporan;
+  insert into public.riwayat_status_laporan (jenis_laporan, id_laporan, status, keterangan)
+    values ('Temuan', p_id_laporan, 'Menunggu Verifikasi', 'Klaim diajukan');
+
+  -- UC-13: notifikasi Perubahan Status untuk pembuat Laporan Temuan (bukan notifikasi klaim, jadi id_klaim kosong).
+  -- Laporan lama tanpa pembuat dilewati (lihat integrasi_pemilik_laporan_temuan.sql).
+  if v_laporan.id_pembuat is not null then
+    perform public.buat_notifikasi(
+      v_laporan.id_pembuat, 'Perubahan Status',
+      'Laporan temuan ' || lower(v_laporan.barang_nama) || ' menerima pengajuan klaim dan kini berstatus Menunggu Verifikasi.',
+      null, p_id_laporan, null);
+  end if;
 
   return public.ambil_klaim_uc14(v_nomor);
 end;

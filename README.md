@@ -21,6 +21,8 @@ Skrip SQL yang digunakan untuk UC-05, UC-06, dan UC-07 tersedia di [`database/sq
 | UC-05 Melaporkan Kehilangan Barang | `/uc05` | `app/uc05/page.tsx` |
 | UC-08 Laporan Saya | `/uc08` | `app/uc08/page.tsx` |
 | UC-12 Barang Temuan | `/uc12` | `app/uc12/page.tsx` |
+| UC-13 Mengajukan Klaim Barang | `/uc12/[id]` lalu `/uc13/[nomor]` | `app/uc12/[id]/page.tsx`, `app/uc13/[nomor]/page.tsx` |
+| UC-14 Mengisi Jawaban Verifikasi Rahasia | `/uc14/[id]` | `app/uc14/[id]/page.tsx` |
 | UC-16 Halaman Petugas | `/uc16` | `app/uc16/page.tsx` |
 
 Di Next.js App Router, folder dan file `page.tsx` menentukan alamat halaman. Proyek ini tidak memakai file view PHP atau `web.php`.

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { ambilRepositori, type LampiranBukti } from '../../../lib/fits/repositori';
 import { type InfoPublik, type PertanyaanPublik } from '../../../lib/fits/tipe';
 import { isDapatDiklaim } from '../../../lib/fits/laporan-temuan';
+import { tafsirkanPenolakanKlaim } from '../../../lib/fits/klaim';
 import { ambilKlienSupabase } from '../../../lib/supabase/klien';
 import { KepalaHalaman, NavBawah, Pemberitahuan } from '../../komponen/umum';
 import { FormVerifikasi } from '../../komponen/verifikasi';
@@ -60,8 +61,21 @@ export default function HalamanJawabanVerifikasi() {
   }, [id, detail, router]);
 
   async function kirimJawaban(jawaban: Record<string, string>, bukti: LampiranBukti[]) {
-    const klaim = await ambilRepositori().ajukanKlaim(id, jawaban, bukti);
-    router.push(`/uc13/${encodeURIComponent(klaim.nomorPengajuanKlaim)}?diajukan=1`);
+    const repo = ambilRepositori();
+    try {
+      const klaim = await repo.ajukanKlaim(id, jawaban, bukti);
+      router.push(`/uc13/${encodeURIComponent(klaim.nomorPengajuanKlaim)}?diajukan=1`);
+    } catch (e) {
+      // UC-13 Alternate Flow: database menolak walau pemeriksaan di Halaman Detail Barang sudah lolos.
+      const penolakan = tafsirkanPenolakanKlaim(e instanceof Error ? e.message : '');
+      if (penolakan === 'sudah-diajukan') {
+        const klaimLama = await repo.cariKlaimDiajukan(id);
+        if (klaimLama) { router.replace(`/uc13/${encodeURIComponent(klaimLama.nomorPengajuanKlaim)}?sudah=1`); return; }
+      }
+      if (penolakan === 'milik-sendiri') throw new Error('Kamu tidak dapat mengklaim barang dari laporan temuan yang kamu buat sendiri.');
+      if (penolakan === 'tidak-dapat-diklaim') throw new Error('Barang ini sudah tidak dapat diklaim.');
+      throw e;
+    }
   }
 
   return (

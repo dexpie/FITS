@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { buatKlaim, formatWaktuPengajuan, isBerkasBuktiValid, periksaKelengkapan, periksaPengajuanKlaim, tanggalWib, terbitkanNomorPengajuan } from './klaim';
+import { buatKlaim, formatWaktuPengajuan, isBerkasBuktiValid, periksaKelengkapan, periksaPengajuanKlaim, tafsirkanPenolakanKlaim, tanggalWib, terbitkanNomorPengajuan } from './klaim';
 import type { Klaim, PertanyaanPublik } from './tipe';
 
 const pertanyaan: PertanyaanPublik[] = [
@@ -40,6 +40,25 @@ describe('periksaPengajuanKlaim', () => {
 
   test('barang Menunggu Verifikasi masih menerima klaim dari pengguna lain', () => {
     expect(periksaPengajuanKlaim({ statusLaporan: 'Menunggu Verifikasi', milikSendiri: false, klaimLama: null })).toEqual({ hasil: 'lanjut' });
+  });
+});
+
+// Pesan galat dari ajukan_klaim_uc14 di database (integrasi_klaim_uc14.sql).
+describe('tafsirkanPenolakanKlaim', () => {
+  test('klaim ganda yang lolos pemeriksaan awal dikenali sebagai sudah-diajukan', () => {
+    expect(tafsirkanPenolakanKlaim('Klaim sudah diajukan')).toBe('sudah-diajukan');
+  });
+
+  test('pengajuan atas laporan sendiri dikenali sebagai milik-sendiri', () => {
+    expect(tafsirkanPenolakanKlaim('Tidak dapat mengklaim laporan sendiri')).toBe('milik-sendiri');
+  });
+
+  test('status laporan yang berubah dikenali sebagai tidak-dapat-diklaim', () => {
+    expect(tafsirkanPenolakanKlaim('tidak-dapat-diklaim')).toBe('tidak-dapat-diklaim');
+  });
+
+  test('galat lain bukan penolakan UC-13', () => {
+    expect(tafsirkanPenolakanKlaim('Jawaban Verifikasi belum lengkap')).toBeNull();
   });
 });
 

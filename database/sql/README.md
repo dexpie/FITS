@@ -29,5 +29,10 @@ dipertahankan dengan kolom pemilik kosong. Jangan mengisi pemilik dengan
 tebakan. Klaim lama tidak dapat dilihat melalui fungsi klaim pengguna sampai
 pengajunya ditentukan dari data yang valid.
 
+`integrasi_klaim_uc14.sql` diperbarui untuk UC-13: `ajukan_klaim_uc14` kini
+mencatat riwayat "Klaim diajukan" dan mengirim notifikasi Perubahan Status ke
+pembuat Laporan Temuan. Jalankan ulang file ini di SQL Editor setelah
+`uc08_laporan_saya.sql` dan `uc09_notifikasi.sql`.
+
 `pg_cron` dan dua jadwal UC-09/UC-10 sudah aktif pada Project FITS.
 Pencatatan kecocokan pada pilihan "Ini Barang yang Sama" belum diimplementasi.

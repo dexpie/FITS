@@ -9,6 +9,17 @@ export function periksaPengajuanKlaim(masukan: { statusLaporan: StatusLaporan; m
   return { hasil: 'lanjut' };
 }
 
+// UC-13: database memeriksa ulang saat Kirim Jawaban. Pesan harus sama dengan raise exception di ajukan_klaim_uc14.
+const PENOLAKAN_KLAIM: Record<string, 'milik-sendiri' | 'sudah-diajukan' | 'tidak-dapat-diklaim'> = {
+  'Tidak dapat mengklaim laporan sendiri': 'milik-sendiri',
+  'Klaim sudah diajukan': 'sudah-diajukan',
+  'tidak-dapat-diklaim': 'tidak-dapat-diklaim',
+};
+
+export function tafsirkanPenolakanKlaim(pesan: string) {
+  return PENOLAKAN_KLAIM[pesan] ?? null;
+}
+
 // UC-14: mengembalikan id Pertanyaan Verifikasi yang jawabannya masih kosong.
 export function periksaKelengkapan(pertanyaan: PertanyaanPublik[], jawaban: Record<string, string>) {
   return pertanyaan.filter(p => !jawaban[p.id]?.trim()).map(p => p.id);

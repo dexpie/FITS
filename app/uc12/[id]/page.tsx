@@ -18,20 +18,30 @@ export default function HalamanDetailBarang() {
   const router = useRouter();
   const [muatan, setMuatan] = useState<Muatan>(undefined);
   const [ditolakMilikSendiri, setDitolakMilikSendiri] = useState(false);
+  const [memeriksa, setMemeriksa] = useState(false);
+  const [galat, setGalat] = useState('');
 
   useEffect(() => {
-    ambilRepositori().ambilLaporanPublik(id).then(setMuatan);
+    ambilRepositori().ambilLaporanPublik(id).then(setMuatan).catch(() => setMuatan(null));
   }, [id]);
 
+  // UC-13: pemeriksaan pembuat laporan dan klaim Diajukan sebelum UC-14 dijalankan.
   async function tekanTombolAjukanKlaim() {
-    if (!muatan) return;
-    const { data: { user } } = await ambilKlienSupabase().auth.getUser();
-    if (!user) { router.push(`/uc02?next=${encodeURIComponent(`/uc12/${id}`)}`); return; }
-    const klaimLama = await ambilRepositori().cariKlaimDiajukan(id);
-    const periksa = periksaPengajuanKlaim({ statusLaporan: muatan.info.statusLaporan, milikSendiri: muatan.milikSendiri, klaimLama });
-    if (periksa.hasil === 'milik-sendiri') setDitolakMilikSendiri(true);
-    else if (periksa.hasil === 'sudah-diajukan') router.push(`/uc13/${periksa.klaim.nomorPengajuanKlaim}?sudah=1`);
-    else if (periksa.hasil === 'lanjut') router.push(`/uc14/${id}`);
+    if (!muatan || memeriksa) return;
+    setMemeriksa(true);
+    setGalat('');
+    try {
+      const { data: { user } } = await ambilKlienSupabase().auth.getUser();
+      if (!user) { router.push(`/uc02?next=${encodeURIComponent(`/uc12/${id}`)}`); return; }
+      const klaimLama = await ambilRepositori().cariKlaimDiajukan(id);
+      const periksa = periksaPengajuanKlaim({ statusLaporan: muatan.info.statusLaporan, milikSendiri: muatan.milikSendiri, klaimLama });
+      if (periksa.hasil === 'milik-sendiri') setDitolakMilikSendiri(true);
+      else if (periksa.hasil === 'sudah-diajukan') { router.push(`/uc13/${encodeURIComponent(periksa.klaim.nomorPengajuanKlaim)}?sudah=1`); return; }
+      else if (periksa.hasil === 'lanjut') { router.push(`/uc14/${id}`); return; }
+    } catch {
+      setGalat('Pengajuan klaim belum bisa diperiksa. Coba lagi beberapa saat.');
+    }
+    setMemeriksa(false);
   }
 
   if (muatan === undefined) return <main className="view-phone"><KepalaHalaman judul="Detail Barang" kembali="/uc12" labelKembali="Kembali ke Barang Temuan" /><section className="view-content" aria-busy="true" /><NavBawah aktif="Temuan" /></main>;
@@ -66,13 +76,14 @@ export default function HalamanDetailBarang() {
         : <>
           <div className="found-description"><strong>Deskripsi</strong><p>{info.deskripsi}</p></div>
           <p className="found-description">{dapatDiklaim ? 'Barang tersedia untuk diklaim. Ajukan klaim untuk melanjutkan ke proses klaim.' : 'Barang ini sudah tidak tersedia untuk diklaim.'}</p>
+          {galat && <Pemberitahuan nada="bahaya">{galat}</Pemberitahuan>}
         </>}
     </section>
 
     <div className="actions">
       {ditolakMilikSendiri
         ? <button onClick={() => setDitolakMilikSendiri(false)}>Kembali ke Detail Barang</button>
-        : <button disabled={!dapatDiklaim} onClick={tekanTombolAjukanKlaim}>Ajukan Klaim</button>}
+        : <button disabled={!dapatDiklaim || memeriksa} aria-busy={memeriksa} onClick={tekanTombolAjukanKlaim}>Ajukan Klaim</button>}
     </div>
     <NavBawah aktif="Temuan" />
   </main>;

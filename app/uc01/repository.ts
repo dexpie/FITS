@@ -5,7 +5,8 @@ import { supabase } from '../supabase';
 import type { GalatIsian, HasilDaftar, IsianDaftar } from './types';
 
 export const PANJANG_MINIMAL_SANDI = 8;
-const POLA_EMAIL_ITS = /^[^@\s]+@(its\.ac\.id|mhs\.its\.ac\.id)$/i;
+// Pendaftaran khusus mahasiswa: hanya domain @student.its.ac.id.
+const POLA_EMAIL_ITS = /^[^@\s]+@student\.its\.ac\.id$/i;
 const POLA_NRP = /^[0-9]{10}$/;
 
 export function isEmailITS(email: string): boolean {
@@ -27,7 +28,7 @@ export function periksaIsian(isian: IsianDaftar): GalatIsian {
   if (Object.keys(galat).length) return galat;
 
   if (!POLA_NRP.test(isian.nrp.trim())) galat.nrp = 'NRP harus 10 digit angka.';
-  if (!isEmailITS(isian.email)) galat.email = 'Gunakan alamat email ITS (@its.ac.id atau @mhs.its.ac.id).';
+  if (!isEmailITS(isian.email)) galat.email = 'Gunakan email mahasiswa ITS (@student.its.ac.id).';
   if (!isKataSandiValid(isian.kataSandi, isian.ulangan)) {
     if (isian.kataSandi.length < PANJANG_MINIMAL_SANDI) {
       galat.kataSandi = `Kata sandi belum memenuhi ketentuan panjang minimal (${PANJANG_MINIMAL_SANDI} karakter).`;

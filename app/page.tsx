@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SapaanBeranda } from './komponen/sapaan-beranda';
+import { Bertahap, KartuTautan, Muncul } from './komponen/gerak';
 import './home.css';
 
 const recentFinds = [
@@ -28,25 +29,25 @@ export default function Home() {
     <section className="home-content">
       <SapaanBeranda />
 
-      <div className="home-actions">
-        <Link href="/uc05" className="home-action-card report-lost">
+      <Bertahap className="home-actions">
+        <KartuTautan href="/uc05" className="home-action-card report-lost">
           <span className="action-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.2"/><path d="m16 16 5 5M8.5 8.5l4.6 4.6m0-4.6-4.6 4.6"/></svg></span>
           <strong>Lapor Hilang</strong><span>Kehilangan barang?<br />Laporkan di sini.</span>
-        </Link>
-        <Link href="/uc07" className="home-action-card report-found">
+        </KartuTautan>
+        <KartuTautan href="/uc07" className="home-action-card report-found">
           <span className="action-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 8 9-5 9 5-9 5-9-5Zm0 0v9l9 5 9-5V8M12 13v9m5-11v5l-2-1.2-2 1.2v-5"/></svg></span>
           <strong>Lapor Temuan</strong><span>Bantu kembalikan barang<br />yang kamu temukan.</span>
-        </Link>
-      </div>
+        </KartuTautan>
+      </Bertahap>
 
-      <div className="home-section-heading"><h2>Barang Temuan Terbaru</h2><Link href="/uc12">Lihat Semua</Link></div>
-      <div className="home-recent-list">
-        {recentFinds.map(item => <Link className="home-find-card" href="/uc12" key={item.name}>
+      <Muncul jeda={0.25} className="home-section-heading"><h2>Barang Temuan Terbaru</h2><Link href="/uc12">Lihat Semua <span aria-hidden="true">→</span></Link></Muncul>
+      <Bertahap className="home-recent-list">
+        {recentFinds.map(item => <KartuTautan className="home-find-card" href="/uc12" key={item.name} angkat={2}>
           <img src={item.image} alt={item.name} />
           <span className="find-copy"><strong>{item.name}</strong><span>{item.location}</span><small>{item.date}</small></span>
           <span className="find-status">Tersedia</span>
-        </Link>)}
-      </div>
+        </KartuTautan>)}
+      </Bertahap>
     </section>
 
     <nav className="home-nav" aria-label="Navigasi utama">

@@ -9,18 +9,26 @@ export default function Login() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('');
+  const [gagal, setGagal] = useState(0);
+  const [proses, setProses] = useState(false);
+  const tolak = (pesan: string) => { setMessage(pesan); setGagal(n => n + 1); };
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!supabase) { setMessage('Konfigurasi Supabase belum tersedia.'); return; }
+    if (proses) return;
+    if (!supabase) { tolak('Konfigurasi Supabase belum tersedia.'); return; }
     const data = new FormData(event.currentTarget);
     const email = String(data.get('identitas') || '').trim().toLowerCase();
     const isTestAccount = process.env.NODE_ENV === 'development' && email === 'cekingdot1@gmail.com';
-    if (!isTestAccount && !/^[^@\s]+@(its\.ac\.id|mhs\.its\.ac\.id)$/.test(email)) {
-      setMessage('Gunakan email ITS (@its.ac.id atau @mhs.its.ac.id).');
+    // Akun baru hanya @student.its.ac.id (UC-01); domain lama tetap boleh masuk untuk akun yang sudah ada.
+    if (!isTestAccount && !/^[^@\s]+@(student\.its\.ac\.id|its\.ac\.id|mhs\.its\.ac\.id)$/.test(email)) {
+      tolak('Gunakan email ITS (@student.its.ac.id).');
       return;
     }
+    setMessage('');
+    setProses(true);
     const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password: String(data.get('password') || '') });
-    if (error || !user) { setMessage('Login gagal. Periksa email dan kata sandi.'); return; }
+    setProses(false);
+    if (error || !user) { tolak('Login gagal. Periksa email dan kata sandi.'); return; }
     const next = new URLSearchParams(window.location.search).get('next');
     const tujuan = next && /^\/(?![/\\])/.test(next) && !/[\\\s]/.test(next) ? next : '/';
     if (tujuan === '/') sessionStorage.setItem(kunciLoginBeranda, user.id);

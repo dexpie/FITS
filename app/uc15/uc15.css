@@ -1,28 +1,28 @@
-/* UC-15 Memverifikasi Klaim Barang. Kelas dasar (view-phone, view-header, work-card, work-heading) dari app/views.css. */
-.uc15 .view-header img { width: 20px; height: 20px; display: block; }
-.uc15-kembali { border: 0; background: transparent; padding: 0; cursor: pointer; }
-.uc15-info, .uc15-kecil { font-size: 12px; color: #6b7280; margin: 0; }
-.uc15-galat { margin: 0; padding: 10px 12px; border-radius: 8px; background: #fef2f2; color: #b91c1c; font-size: 12px; }
-.uc15-peringatan { margin: 0; padding: 10px 12px; border-radius: 8px; background: #fff3d6; color: #92400e; font-size: 12px; }
-.uc15-cari { display: flex; flex-direction: column; gap: 8px; background: #fff; border: 1px solid #dde1e7; border-radius: 12px; padding: 12px; }
-.uc15-cari label, .uc15-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; }
-.uc15-cari input, .uc15-form input:not([type]) { height: 40px; border: 1px solid #dde1e7; border-radius: 8px; padding: 0 10px; font-size: 13px; }
-.uc15-cari button { height: 40px; border: 0; border-radius: 8px; background: #073a75; color: #fff; font-weight: 700; cursor: pointer; }
-.uc15-judul { font-size: 14px; margin: 0; }
-.uc15-baris { display: flex; justify-content: space-between; font-size: 12px; }
-.uc15-jawaban { display: flex; flex-direction: column; gap: 4px; padding: 8px 0; border-top: 1px solid #eef0f3; font-size: 12px; }
-.uc15-jawaban .temuan { color: #073a75; }
-.uc15-jawaban .klaim { color: #166534; }
-.uc15-form { display: flex; flex-direction: column; gap: 10px; background: #fff; border: 1px solid #dde1e7; border-radius: 12px; padding: 12px; }
-.uc15-form fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-.uc15-form legend { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-.uc15-centang { flex-direction: row !important; align-items: center; gap: 8px !important; font-weight: 400 !important; font-size: 12px !important; }
-.uc15-centang input { accent-color: #073a75; }
-.uc15-tombol { min-height: 44px; border: 0; border-radius: 8px; background: #ffcc29; color: #1f2937; font-weight: 700; display: grid; place-items: center; text-decoration: none; cursor: pointer; }
-.uc15-tombol-garis { height: 44px; border: 1px solid #073a75; border-radius: 8px; background: #fff; color: #073a75; font-weight: 700; cursor: pointer; }
-.uc15-tombol-teks { height: 36px; border: 0; background: transparent; color: #6b7280; font-weight: 600; cursor: pointer; }
-.uc15-hasil { display: flex; flex-direction: column; gap: 6px; border-radius: 12px; padding: 14px; font-size: 12px; }
-.uc15-hasil.cocok { background: #dcfce7; border: 1px solid #bbf7d0; }
-.uc15-hasil.tidak { background: #fef2f2; border: 1px solid #fecaca; }
-.uc15-hasil img { width: 24px; height: 24px; }
-.uc15-hasil strong { font-size: 15px; }
+@reference "../tailwind.css";
+
+.uc15 .view-header img { @apply block size-5; }
+.uc15-info, .uc15-kecil { @apply m-0 text-xs text-[#6b7280]; }
+.uc15-galat { @apply m-0 rounded-lg bg-[#fef2f2] px-3 py-2.5 text-xs text-[#b91c1c]; }
+.uc15-peringatan { @apply m-0 rounded-lg bg-[#fff3d6] px-3 py-2.5 text-xs text-[#92400e]; }
+.uc15-cari, .uc15-form { @apply flex flex-col gap-2 rounded-xl border border-solid border-[#dde1e7] bg-white p-3; }
+.uc15-form { @apply gap-2.5; }
+.uc15-cari label, .uc15-form label:not(.uc15-centang) { @apply flex flex-col gap-1.5 text-[13px] font-semibold; }
+.uc15-cari input, .uc15-form input:not([type]) { @apply h-10 rounded-lg px-2.5 text-[13px]; }
+.uc15-cari button { @apply h-10 cursor-pointer rounded-lg border-0 bg-[#073a75] font-bold text-white disabled:opacity-50; }
+.uc15-judul { @apply m-0 text-sm; }
+.uc15-baris { @apply flex justify-between gap-2 text-xs; }
+.uc15-jawaban { @apply flex flex-col gap-1 border-t border-solid border-[#eef0f3] py-2 text-xs; }
+.uc15-jawaban .temuan { @apply text-[#073a75]; }
+.uc15-jawaban .klaim { @apply text-[#166534]; }
+.uc15-form fieldset { @apply m-0 flex flex-col gap-2 border-0 p-0; }
+.uc15-form legend { @apply mb-1.5 text-[13px] font-semibold; }
+.uc15-centang { @apply flex items-center gap-2 text-xs font-normal; }
+.uc15-centang input { @apply accent-[#073a75]; }
+.uc15-tombol { @apply grid min-h-11 cursor-pointer place-items-center rounded-lg border-0 bg-[#ffcc29] font-bold text-[#1f2937] no-underline disabled:opacity-50; }
+.uc15-tombol-garis { @apply h-11 cursor-pointer rounded-lg border border-solid border-[#073a75] bg-white font-bold text-[#073a75] disabled:opacity-50; }
+.uc15-tombol-teks { @apply h-9 cursor-pointer border-0 bg-transparent font-semibold text-[#6b7280] disabled:opacity-50; }
+.uc15-hasil { @apply flex flex-col gap-1.5 rounded-xl border border-solid p-3.5 text-xs; }
+.uc15-hasil.cocok { @apply border-[#bbf7d0] bg-[#dcfce7]; }
+.uc15-hasil.tidak { @apply border-[#fecaca] bg-[#fef2f2]; }
+.uc15-hasil img { @apply size-6; }
+.uc15-hasil strong { @apply text-[15px]; }

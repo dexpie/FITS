@@ -38,10 +38,10 @@ export type DataVerifikasi = {
   pengaju_nama: string;
   pengaju_nrp: string | null;
   jawaban: JawabanVerifikasi[];
-  bukti: { jenis: string; keterangan: string | null; berkas: string }[];
+  bukti: { id: string; jenis: string; nama_berkas: string; path_storage: string; url?: string }[];
   laporan_kehilangan: { nomor_laporan: string; barang_nama: string; deskripsi: string; lokasi: string; created_at: string }[];
   klaim_lain: string[];
   hasil_verifikasi: HasilVerifikasi | null;
 };
 
-export type AksesPetugas = 'petugas' | 'bukan-petugas' | 'belum-masuk' | 'tanpa-konfigurasi';
+export type AksesPetugas = 'petugas' | 'bukan-petugas' | 'belum-masuk' | 'tanpa-konfigurasi' | 'gagal';

@@ -1,108 +1,9 @@
 -- UC-15 Memverifikasi Klaim Barang (Fawzy), bagian 2 dari 2. Jalankan setelah uc15_01_status_klaim.sql.
 -- Petugas mencari klaim, membandingkan jawaban pengklaim dengan jawaban rahasia penemu,
 -- lalu menyatakan Cocok atau Tidak Cocok setelah pemeriksaan tatap muka.
--- Independen: setiap tabel hanya dibuat dan diatur kalau belum ada.
---
--- PENTING untuk yang menjalankan migration:
---   Tabel klaim, jawaban_verifikasi, dan bukti_pendukung sebenarnya milik UC-14 (Fabio).
---   Kalau SQL UC-14 sudah dijalankan, tabel itu TIDAK dibuat ulang di sini, tetapi nama kolomnya
---   harus sama dengan yang dipakai fungsi di bawah (id_laporan_temuan, id_pengaju, status,
---   nomor_pengajuan, id_klaim, id_pertanyaan, isi_jawaban, jenis, keterangan, berkas).
---   Cocokkan dulu dengan SQL UC-14 sebelum menjalankan file ini.
+-- Memakai profil UC-01, riwayat UC-08, notifikasi UC-09, dan skema klaim UC-14.
+
 begin;
-
--- Profil akun. Definisi sama persis dengan uc01 dan uc16_02.
-do $$
-begin
-  if to_regclass('public.profil') is null then
-    create table public.profil (
-      id uuid primary key references auth.users(id) on delete cascade,
-      nama text not null check (length(trim(nama)) > 0),
-      nrp text unique check (nrp ~ '^[0-9]{10}$'),
-      peran text not null default 'pengguna' check (peran in ('pengguna', 'petugas')),
-      created_at timestamptz not null default now()
-    );
-    alter table public.profil enable row level security;
-    revoke all on public.profil from anon, authenticated;
-    grant select on public.profil to authenticated;
-    create policy "Profil: lihat milik sendiri" on public.profil
-      for select to authenticated using ((select auth.uid()) = id);
-  end if;
-end $$;
-
--- Riwayat perubahan status laporan. Definisi sama persis dengan uc08, uc10_02, dan uc16_02.
-do $$
-begin
-  if to_regclass('public.riwayat_status_laporan') is null then
-    create table public.riwayat_status_laporan (
-      id uuid primary key default gen_random_uuid(),
-      jenis_laporan text not null check (jenis_laporan in ('Kehilangan', 'Temuan')),
-      id_laporan uuid not null,
-      status text not null,
-      keterangan text not null,
-      id_pengubah uuid references auth.users(id),   -- kosong = diubah Sistem
-      catatan text,
-      created_at timestamptz not null default now()
-    );
-    create index riwayat_status_laporan_idx on public.riwayat_status_laporan (jenis_laporan, id_laporan, created_at);
-    alter table public.riwayat_status_laporan enable row level security;
-    revoke all on public.riwayat_status_laporan from anon, authenticated;
-  end if;
-end $$;
-
--- Klaim (milik UC-14). Definisi sama persis dengan uc16_02.
-do $$
-begin
-  if to_regclass('public.klaim') is null then
-    create table public.klaim (
-      id uuid primary key default gen_random_uuid(),
-      nomor_pengajuan text not null unique
-        default ('KL-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 12))),
-      id_laporan_temuan uuid not null references public.laporan_temuan(id) on delete cascade,
-      id_pengaju uuid not null default auth.uid() references auth.users(id),
-      status text not null default 'Diajukan' check (status in ('Diajukan', 'Terverifikasi', 'Ditolak')),
-      created_at timestamptz not null default now()
-    );
-    create index klaim_laporan_status_idx on public.klaim (id_laporan_temuan, status);
-    alter table public.klaim enable row level security;
-    revoke all on public.klaim from anon, authenticated;
-    grant select on public.klaim to authenticated;
-    create policy "Klaim: lihat milik sendiri" on public.klaim
-      for select to authenticated using ((select auth.uid()) = id_pengaju);
-  end if;
-end $$;
-
--- Jawaban pengklaim untuk pertanyaan verifikasi (milik UC-14).
-do $$
-begin
-  if to_regclass('public.jawaban_verifikasi') is null then
-    create table public.jawaban_verifikasi (
-      id uuid primary key default gen_random_uuid(),
-      id_klaim uuid not null references public.klaim(id) on delete cascade,
-      id_pertanyaan uuid not null references public.pertanyaan_verifikasi(id) on delete cascade,
-      isi_jawaban text not null,
-      unique (id_klaim, id_pertanyaan)
-    );
-    alter table public.jawaban_verifikasi enable row level security;
-    revoke all on public.jawaban_verifikasi from anon, authenticated;
-  end if;
-end $$;
-
--- Bukti pendukung klaim (milik UC-14).
-do $$
-begin
-  if to_regclass('public.bukti_pendukung') is null then
-    create table public.bukti_pendukung (
-      id uuid primary key default gen_random_uuid(),
-      id_klaim uuid not null references public.klaim(id) on delete cascade,
-      jenis text not null check (jenis in ('Nota', 'Kartu Garansi', 'Kemasan', 'Foto Lama')),
-      keterangan text,
-      berkas text not null
-    );
-    alter table public.bukti_pendukung enable row level security;
-    revoke all on public.bukti_pendukung from anon, authenticated;
-  end if;
-end $$;
 
 -- Hasil pemeriksaan tatap muka oleh Petugas. Satu klaim hanya punya satu hasil.
 do $$
@@ -122,7 +23,7 @@ begin
   end if;
 end $$;
 
--- Apakah akun yang masuk berperan Petugas? Definisi sama persis dengan uc16_02.
+-- Role dari profil dipakai bersama oleh UC-15 dan UC-16.
 create or replace function public.is_petugas()
 returns boolean
 language sql
@@ -132,6 +33,26 @@ set search_path = ''
 as $$
   select exists (select 1 from public.profil where id = (select auth.uid()) and peran = 'petugas');
 $$;
+
+-- Petugas hanya dapat membuka berkas yang benar-benar tercatat sebagai bukti.
+create or replace function public.boleh_baca_bukti_uc15(p_path text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select public.is_petugas() and exists (
+    select 1 from public.bukti_pendukung where path_storage = p_path and path_storage <> ''
+  );
+$$;
+revoke all on function public.boleh_baca_bukti_uc15(text) from public, anon;
+grant execute on function public.boleh_baca_bukti_uc15(text) to authenticated;
+
+drop policy if exists "Bukti klaim: lihat petugas" on storage.objects;
+create policy "Bukti klaim: lihat petugas" on storage.objects
+  for select to authenticated
+  using (bucket_id = 'bukti-klaim' and public.boleh_baca_bukti_uc15(name));
 
 -- Daftar klaim yang menunggu verifikasi (Halaman Verifikasi Klaim).
 create or replace function public.ambil_klaim_diajukan_uc15()
@@ -146,13 +67,13 @@ begin
     raise exception 'Halaman ini khusus untuk Petugas';
   end if;
   return query
-    select k.id, k.nomor_pengajuan, t.barang_nama, coalesce(p.nama, u.email::text), k.created_at
+    select k.id, k.nomor_pengajuan_klaim, t.barang_nama, coalesce(p.nama, u.email::text), k.waktu_pengajuan
     from public.klaim k
-    join public.laporan_temuan t on t.id = k.id_laporan_temuan
+    join public.laporan_temuan t on t.id = k.id_laporan
     join auth.users u on u.id = k.id_pengaju
     left join public.profil p on p.id = k.id_pengaju
-    where k.status = 'Diajukan'
-    order by k.created_at;
+    where k.status = 'Diajukan' and t.status_laporan in ('Menunggu Verifikasi', 'Tersedia')
+    order by k.waktu_pengajuan;
 end;
 $$;
 
@@ -170,7 +91,8 @@ begin
   if not public.is_petugas() then
     raise exception 'Halaman ini khusus untuk Petugas';
   end if;
-  select k.id into v_id from public.klaim k where upper(k.nomor_pengajuan) = upper(trim(p_nomor));
+  select k.id into v_id from public.klaim k
+    where upper(k.nomor_pengajuan_klaim) = upper(trim(p_nomor)) and k.id_pengaju is not null;
   return v_id;
 end;
 $$;
@@ -192,13 +114,13 @@ begin
     raise exception 'Halaman ini khusus untuk Petugas';
   end if;
 
-  select k.id, k.nomor_pengajuan, k.status, k.created_at, k.id_pengaju,
+  select k.id, k.nomor_pengajuan_klaim as nomor_pengajuan, k.status, k.waktu_pengajuan as created_at, k.id_pengaju,
          t.id as id_laporan, t.nomor_laporan, t.barang_nama, t.barang_kategori, t.lokasi,
          t.status_laporan::text as status_laporan, pos.nama as pos_drop_off,
          coalesce(p.nama, u.email::text) as pengaju_nama, p.nrp as pengaju_nrp
     into v_klaim
     from public.klaim k
-    join public.laporan_temuan t on t.id = k.id_laporan_temuan
+    join public.laporan_temuan t on t.id = k.id_laporan
     join auth.users u on u.id = k.id_pengaju
     left join public.profil p on p.id = k.id_pengaju
     left join public.pos_drop_off pos on pos.id = t.id_pos_drop_off
@@ -228,7 +150,7 @@ begin
       left join public.jawaban_verifikasi jv on jv.id_pertanyaan = pv.id and jv.id_klaim = p_id
       where pv.id_laporan = v_klaim.id_laporan), '[]'::jsonb),
     'bukti', coalesce((
-      select jsonb_agg(jsonb_build_object('jenis', b.jenis, 'keterangan', b.keterangan, 'berkas', b.berkas))
+      select jsonb_agg(jsonb_build_object('id', b.id, 'jenis', b.jenis, 'nama_berkas', b.nama_berkas, 'path_storage', b.path_storage) order by b.created_at)
       from public.bukti_pendukung b where b.id_klaim = p_id), '[]'::jsonb),
     'laporan_kehilangan', coalesce((
       select jsonb_agg(jsonb_build_object('nomor_laporan', lk.nomor_laporan, 'barang_nama', lk.barang_nama,
@@ -237,9 +159,9 @@ begin
       from public.laporan_kehilangan lk
       where lk.id_pembuat = v_klaim.id_pengaju and lk.barang_kategori = v_klaim.barang_kategori), '[]'::jsonb),
     'klaim_lain', coalesce((
-      select jsonb_agg(k2.nomor_pengajuan order by k2.created_at)
+      select jsonb_agg(k2.nomor_pengajuan_klaim order by k2.waktu_pengajuan)
       from public.klaim k2
-      where k2.id_laporan_temuan = v_klaim.id_laporan and k2.status = 'Diajukan' and k2.id <> p_id), '[]'::jsonb),
+      where k2.id_laporan = v_klaim.id_laporan and k2.status = 'Diajukan' and k2.id <> p_id), '[]'::jsonb),
     'hasil_verifikasi', v_hasil);
 end;
 $$;
@@ -258,23 +180,32 @@ declare
   v_klaim record;
   v_bukti text[];
   v_sisa integer;
-  v_ada_notifikasi boolean := to_regprocedure('public.buat_notifikasi(uuid,text,text,uuid,uuid,uuid)') is not null;
 begin
   if not public.is_petugas() then
     raise exception 'Halaman ini khusus untuk Petugas';
   end if;
-  select k.id, k.nomor_pengajuan, k.status, k.id_pengaju, t.id as id_laporan, t.id_pembuat,
+  -- UC-14 juga mengunci laporan sebelum menulis klaim. Serialkan keputusan
+  -- atas klaim berbeda untuk barang yang sama dengan urutan kunci yang sama.
+  perform 1 from public.laporan_temuan t
+    join public.klaim k on k.id_laporan = t.id
+    where k.id = p_id
+    for update of t;
+
+  select k.id, k.nomor_pengajuan_klaim as nomor_pengajuan, k.status, k.id_pengaju, t.id as id_laporan, t.id_pembuat,
          t.barang_nama, t.status_laporan::text as status_laporan, pos.nama as pos_drop_off,
          coalesce(p.nama, '') as pengaju_nama
     into v_klaim
     from public.klaim k
-    join public.laporan_temuan t on t.id = k.id_laporan_temuan
+    join public.laporan_temuan t on t.id = k.id_laporan
     left join public.profil p on p.id = k.id_pengaju
     left join public.pos_drop_off pos on pos.id = t.id_pos_drop_off
     where k.id = p_id
     for update of k;
   if not found then
     raise exception 'Klaim tidak ditemukan';
+  end if;
+  if v_klaim.id_pengaju is null or v_klaim.pengaju_nama = '' then
+    raise exception 'Profil pengklaim belum lengkap untuk diperiksa';
   end if;
   if v_klaim.status <> 'Diajukan' then
     raise exception 'Klaim sudah diputuskan';
@@ -307,30 +238,28 @@ begin
     update public.laporan_temuan set status_laporan = 'Diklaim' where id = v_klaim.id_laporan;
     insert into public.riwayat_status_laporan (jenis_laporan, id_laporan, status, keterangan, id_pengubah)
       values ('Temuan', v_klaim.id_laporan, 'Diklaim', 'Klaim terverifikasi', v_petugas);
-    if v_ada_notifikasi then
-      perform public.buat_notifikasi(v_klaim.id_pengaju, 'Hasil Verifikasi Klaim',
-        'Klaim ' || v_klaim.nomor_pengajuan || ' terverifikasi. Barang "' || v_klaim.barang_nama
-          || '" dapat diambil di ' || coalesce(v_klaim.pos_drop_off, 'Pos Drop-off') || '.',
-        null, null, p_id);
+    perform public.buat_notifikasi(v_klaim.id_pengaju, 'Hasil Verifikasi Klaim',
+      'Klaim ' || v_klaim.nomor_pengajuan || ' terverifikasi. Barang "' || v_klaim.barang_nama
+        || '" dapat diambil di ' || coalesce(v_klaim.pos_drop_off, 'Pos Drop-off') || '.',
+      null, null, p_id);
+    if v_klaim.id_pembuat is not null then
       perform public.buat_notifikasi(v_klaim.id_pembuat, 'Perubahan Status',
         'Barang temuanmu "' || v_klaim.barang_nama || '" telah diklaim oleh pemiliknya.',
         null, v_klaim.id_laporan, null);
     end if;
   else
     update public.klaim set status = 'Ditolak' where id = p_id;
-    if v_ada_notifikasi then
-      perform public.buat_notifikasi(v_klaim.id_pengaju, 'Hasil Verifikasi Klaim',
-        'Klaim ' || v_klaim.nomor_pengajuan || ' ditolak karena bukti dan jawaban tidak cocok.',
-        null, null, p_id);
-    end if;
+    perform public.buat_notifikasi(v_klaim.id_pengaju, 'Hasil Verifikasi Klaim',
+      'Klaim ' || v_klaim.nomor_pengajuan || ' ditolak karena bukti dan jawaban tidak cocok.',
+      null, null, p_id);
     -- Barang kembali Tersedia kalau tidak ada klaim lain yang masih menunggu.
     select count(*) into v_sisa from public.klaim
-      where id_laporan_temuan = v_klaim.id_laporan and status = 'Diajukan';
+      where id_laporan = v_klaim.id_laporan and status = 'Diajukan';
     if v_sisa = 0 then
       update public.laporan_temuan set status_laporan = 'Tersedia' where id = v_klaim.id_laporan;
       insert into public.riwayat_status_laporan (jenis_laporan, id_laporan, status, keterangan, id_pengubah)
         values ('Temuan', v_klaim.id_laporan, 'Tersedia', 'Klaim ditolak', v_petugas);
-      if v_ada_notifikasi then
+      if v_klaim.id_pembuat is not null then
         perform public.buat_notifikasi(v_klaim.id_pembuat, 'Perubahan Status',
           'Barang temuanmu "' || v_klaim.barang_nama || '" kembali berstatus Tersedia.',
           null, v_klaim.id_laporan, null);

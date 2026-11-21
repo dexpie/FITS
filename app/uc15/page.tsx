@@ -22,53 +22,95 @@ export default function VerifikasiKlaim() {
   const [galat, setGalat] = useState('');
   const [ditunda, setDitunda] = useState(false);
   const [proses, setProses] = useState(false);
+  const [memuatDaftar, setMemuatDaftar] = useState(true);
+  const [galatDaftar, setGalatDaftar] = useState('');
+
+  async function muatDaftar() {
+    setMemuatDaftar(true);
+    setGalatDaftar('');
+    try {
+      setDaftar(await ambilKlaimDiajukan());
+    } catch {
+      setGalatDaftar('Daftar klaim belum bisa dimuat. Coba lagi.');
+    } finally {
+      setMemuatDaftar(false);
+    }
+  }
 
   useEffect(() => {
-    cekPetugas().then((a) => { setAkses(a); if (a === 'petugas') ambilKlaimDiajukan().then(setDaftar); });
+    cekPetugas().then((a) => { setAkses(a); if (a === 'petugas') void muatDaftar(); })
+      .catch(() => setAkses('gagal'));
   }, []);
 
   async function buka(id: string) {
     setGalat(''); setDitunda(false); setNamaKtm(''); setBukti([]);
-    setData(await ambilVerifikasi(id));
+    const klaim = await ambilVerifikasi(id);
+    if (!klaim) throw new Error('Klaim tidak tersedia.');
+    setData(klaim);
+  }
+
+  async function bukaDariDaftar(id: string) {
+    setGalatCari('');
+    setProses(true);
+    try {
+      await buka(id);
+    } catch {
+      setGalatCari('Detail klaim belum bisa dimuat. Coba lagi.');
+    } finally {
+      setProses(false);
+    }
   }
 
   async function cari(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (proses) return;
     if (!nomor.trim()) { setGalatCari('Isi Nomor Pengajuan Klaim terlebih dahulu.'); return; }
-    const id = await cariKlaim(nomor);
-    if (!id) { setGalatCari('Nomor Pengajuan Klaim tidak ditemukan.'); return; }
     setGalatCari('');
-    await buka(id);
+    setProses(true);
+    try {
+      const id = await cariKlaim(nomor);
+      if (!id) { setGalatCari('Nomor Pengajuan Klaim tidak ditemukan.'); return; }
+      await buka(id);
+    } catch {
+      setGalatCari('Klaim belum bisa dimuat. Coba lagi.');
+    } finally {
+      setProses(false);
+    }
   }
 
   async function putuskan(hasil: 'Cocok' | 'Tidak Cocok') {
-    if (!data) return;
+    if (!data || proses) return;
     setProses(true); setGalat(''); setDitunda(false);
-    const pesan = await putuskanKlaim(data.id, hasil, namaKtm, bukti);
-    setProses(false);
-    if (pesan) { setGalat(pesan); return; }
-    await buka(data.id);
-    ambilKlaimDiajukan().then(setDaftar);
+    try {
+      const pesan = await putuskanKlaim(data.id, hasil, namaKtm, bukti);
+      if (pesan) { setGalat(pesan); return; }
+      await buka(data.id);
+    } catch {
+      setGalat('Keputusan belum bisa ditampilkan. Buka ulang klaim untuk memeriksa hasilnya.');
+    } finally {
+      setProses(false);
+    }
   }
 
-  const kembali = () => { setData(null); ambilKlaimDiajukan().then(setDaftar); };
+  const kembali = () => { setData(null); void muatDaftar(); };
 
   return <main className="view-phone uc15">
     <header className="view-header">
-      {data ? <button className="uc15-kembali" onClick={kembali} aria-label="Kembali ke daftar klaim"><img src="/uc15/arrow-left.svg" alt="" /></button>
+      {data ? <button className="back" onClick={kembali} disabled={proses} aria-label="Kembali ke daftar klaim"><img src="/uc15/arrow-left.svg" alt="" /></button>
         : <Link href="/uc16" aria-label="Kembali ke Halaman Petugas"><img src="/uc15/arrow-left.svg" alt="" /></Link>}
       <h1>Verifikasi Klaim</h1>
     </header>
     <section className="view-content">
       {akses === null && <p className="uc15-info">Memeriksa akses...</p>}
       {akses === 'tanpa-konfigurasi' && <p className="uc15-info">Konfigurasi Supabase belum tersedia.</p>}
-      {akses === 'belum-masuk' && <p className="uc15-info">Masuk dengan akun Petugas terlebih dahulu. <Link href="/uc02">Masuk</Link></p>}
+      {akses === 'belum-masuk' && <p className="uc15-info">Masuk dengan akun Petugas terlebih dahulu. <Link href="/uc02?next=/uc15">Masuk</Link></p>}
+      {akses === 'gagal' && <p className="uc15-galat" role="alert">Akses Petugas belum bisa diperiksa. Muat ulang halaman untuk mencoba lagi.</p>}
       {akses === 'bukan-petugas' && <p className="uc15-galat" role="alert">Halaman ini khusus untuk Petugas.</p>}
 
       {akses === 'petugas' && !data && <>
         <form className="uc15-cari" onSubmit={cari}>
           <label>Nomor Pengajuan Klaim<input value={nomor} onChange={(e) => setNomor(e.target.value)} placeholder="KL-YYYYMMDD-XXXX" /></label>
-          <button type="submit">Cari Klaim</button>
+          <button type="submit" disabled={proses}>Cari Klaim</button>
           {galatCari && <p className="uc15-galat" role="alert">{galatCari}</p>}
         </form>
         <div className="work-heading"><h2>Klaim Diajukan</h2><span>{daftar.length} klaim</span></div>
@@ -76,9 +118,11 @@ export default function VerifikasiKlaim() {
           <strong>{k.barang_nama}</strong>
           <span className="uc15-kecil">{k.nomor_pengajuan} • {k.pengaju_nama}</span>
           <span className="uc15-kecil">Diajukan {waktu(k.created_at)}</span>
-          <button className="work-button" onClick={() => buka(k.id)}>Detail Klaim</button>
+          <button className="work-button" disabled={proses} onClick={() => bukaDariDaftar(k.id)}>Detail Klaim</button>
         </article>)}
-        {!daftar.length && <p className="uc15-info">Tidak ada klaim yang menunggu verifikasi.</p>}
+        {memuatDaftar && <p className="uc15-info" role="status">Memuat daftar klaim...</p>}
+        {galatDaftar && <div className="uc15-galat" role="alert">{galatDaftar} <button type="button" onClick={muatDaftar}>Muat ulang</button></div>}
+        {!memuatDaftar && !galatDaftar && !daftar.length && <p className="uc15-info">Tidak ada klaim yang menunggu verifikasi.</p>}
       </>}
 
       {akses === 'petugas' && data && <>
@@ -103,7 +147,9 @@ export default function VerifikasiKlaim() {
 
         <article className="work-card">
           <h2 className="uc15-judul">Bukti Pendukung</h2>
-          {data.bukti.map((b, i) => <span className="uc15-kecil" key={i}><b>{b.jenis}</b>{b.keterangan ? ` — ${b.keterangan}` : ''}</span>)}
+          {data.bukti.map((b) => <span className="uc15-kecil" key={b.id}>
+            <b>{b.jenis}</b> • {b.url ? <a href={b.url} target="_blank" rel="noreferrer">Buka {b.nama_berkas}</a> : `${b.nama_berkas} (berkas tidak tersedia)`}
+          </span>)}
           {!data.bukti.length && <span className="uc15-kecil">Tidak ada bukti pendukung.</span>}
         </article>
 
@@ -123,7 +169,7 @@ export default function VerifikasiKlaim() {
           {data.hasil_verifikasi.bukti_penguat.length > 0 && <span>Bukti fisik penguat: {data.hasil_verifikasi.bukti_penguat.join(' ')}</span>}
           {data.hasil_verifikasi.hasil === 'Cocok' && data.pos_drop_off && <span>Barang diambil di {data.pos_drop_off}.</span>}
           <Link href="/uc16" className="uc15-tombol">Ke Halaman Petugas</Link>
-        </article> : <form className="uc15-form" onSubmit={(e) => e.preventDefault()}>
+        </article> : data.status === 'Diajukan' && ['Menunggu Verifikasi', 'Tersedia'].includes(data.status_laporan) ? <form className="uc15-form" onSubmit={(e) => e.preventDefault()}>
           <h2 className="uc15-judul">Pemeriksaan Identitas</h2>
           <label>Nama pada KTM<input value={namaKtm} onChange={(e) => setNamaKtm(e.target.value)} placeholder="Tulis nama yang tertera pada KTM" /></label>
           <fieldset><legend>Bukti Fisik Penguat Klaim</legend>
@@ -136,7 +182,7 @@ export default function VerifikasiKlaim() {
           <button type="button" className="uc15-tombol" disabled={proses} onClick={() => putuskan('Cocok')}>Nyatakan Cocok</button>
           <button type="button" className="uc15-tombol-garis" disabled={proses} onClick={() => putuskan('Tidak Cocok')}>Nyatakan Tidak Cocok</button>
           <button type="button" className="uc15-tombol-teks" disabled={proses} onClick={() => { setGalat(''); setDitunda(true); }}>Tunda Verifikasi</button>
-        </form>}
+        </form> : <p className="uc15-info">Klaim ini sudah tidak menunggu verifikasi.</p>}
       </>}
     </section>
   </main>;

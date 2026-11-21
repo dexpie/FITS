@@ -3,8 +3,10 @@
 // UC-16 Memperbarui Status Laporan: Halaman Petugas dan Halaman Pembaruan Status (insert page).
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ambilDataPetugas, cekPetugas, JENIS_DOKUMENTASI, periksaDokumentasi, selesaikan, statusBerikutnya } from './repository';
-import type { AksesPetugas, DataPetugas, JenisDokumentasi, Pekerjaan } from './types';
+import { cekPetugas } from '../uc15/repository';
+import type { AksesPetugas } from '../uc15/types';
+import { ambilDataPetugas, JENIS_DOKUMENTASI, periksaDokumentasi, selesaikan, statusBerikutnya } from './repository';
+import type { DataPetugas, JenisDokumentasi, Pekerjaan } from './types';
 import './uc16.css';
 
 const NAV = [['863b8.svg', 'Beranda', '/'], ['c3699.svg', 'Pekerjaan', '/uc16'], ['0685c.svg', 'Barang', '/uc15'], ['1d0ab.svg', 'Profil', '/uc02']];
@@ -26,7 +28,8 @@ export default function HalamanPetugas() {
 
   const muat = () => ambilDataPetugas().then(setData);
   useEffect(() => {
-    cekPetugas().then((a) => { setAkses(a); if (a === 'petugas') muat(); });
+    cekPetugas().then(async (a) => { setAkses(a); if (a === 'petugas') await muat(); })
+      .catch(() => setAkses('gagal'));
   }, []);
 
   function bukaDetail(p: Pekerjaan) {
@@ -34,23 +37,28 @@ export default function HalamanPetugas() {
   }
 
   async function simpan() {
-    if (!dipilih) return;
+    if (!dipilih || proses) return;
     const galatIsian = periksaDokumentasi(status, jenis, berkas);
     setGalat(galatIsian);
     if (galatIsian.length || !berkas || !jenis) return;
     setProses(true);
-    const pesan = await selesaikan(dipilih.id_klaim, jenis, berkas);
-    setProses(false);
-    if (pesan) { setGalat([pesan]); return; }
-    setHasil(dipilih); setDipilih(null);
-    muat();
+    try {
+      const pesan = await selesaikan(dipilih.id_klaim, jenis, berkas);
+      if (pesan) { setGalat([pesan]); return; }
+      setHasil(dipilih); setDipilih(null);
+      await muat();
+    } catch {
+      setGalat(['Terjadi gangguan koneksi. Muat ulang halaman untuk memeriksa status laporan.']);
+    } finally {
+      setProses(false);
+    }
   }
 
   const isi = typeof data === 'object' && data ? data : null;
 
   return <main className="view-phone uc16">
     <header className="view-header officer-header">
-      {dipilih && <button className="back" aria-label="Kembali" onClick={() => setDipilih(null)}><img src="/uc16/6dca7.svg" alt="" /></button>}
+      {dipilih && <button className="back" aria-label="Kembali" disabled={proses} onClick={() => setDipilih(null)}><img src="/uc16/6dca7.svg" alt="" /></button>}
       <h1>{dipilih ? 'Pembaruan Status' : 'Halaman Petugas'}</h1>
       {!dipilih && <span className="profile-icon"><img src="/uc16/76c33.svg" alt="Profil" /></span>}
     </header>
@@ -58,7 +66,8 @@ export default function HalamanPetugas() {
     {akses !== 'petugas' ? <section className="view-content officer-content">
       {akses === null && <p className="officer-note">Memeriksa akses...</p>}
       {akses === 'tanpa-konfigurasi' && <p className="officer-note">Konfigurasi Supabase belum tersedia.</p>}
-      {akses === 'belum-masuk' && <p className="officer-note">Masuk dengan akun Petugas terlebih dahulu. <Link href="/uc02">Masuk</Link></p>}
+      {akses === 'belum-masuk' && <p className="officer-note">Masuk dengan akun Petugas terlebih dahulu. <Link href="/uc02?next=/uc16">Masuk</Link></p>}
+      {akses === 'gagal' && <p className="uc16-galat" role="alert">Akses Petugas belum bisa diperiksa. Muat ulang halaman untuk mencoba lagi.</p>}
       {akses === 'bukan-petugas' && <p className="uc16-galat" role="alert">Halaman ini khusus untuk Petugas.</p>}
     </section> : !dipilih ? <section className="view-content officer-content">
       <div className="greeting"><h2>Halo, Petugas!</h2><p>Pekerjaan serah terima barang</p></div>
@@ -103,7 +112,7 @@ export default function HalamanPetugas() {
           </label>}
         </article>
         <div className="documentation"><strong>Dokumentasi Serah Terima</strong>
-          <select className="uc16-pilih" value={jenis} onChange={(e) => setJenis(e.target.value as JenisDokumentasi | '')}>
+          <select className="uc16-pilih" aria-label="Jenis dokumentasi" value={jenis} onChange={(e) => setJenis(e.target.value as JenisDokumentasi | '')}>
             <option value="">Pilih jenis dokumentasi</option>
             {JENIS_DOKUMENTASI.map((j) => <option key={j} value={j}>{j}</option>)}
           </select>
@@ -116,12 +125,12 @@ export default function HalamanPetugas() {
       </section>
       <div className="status-actions">
         <button onClick={simpan} disabled={proses}>{proses ? 'Menyimpan...' : 'Simpan Perubahan'}</button>
-        <button onClick={() => setDipilih(null)}>Kembali</button>
+        <button onClick={() => setDipilih(null)} disabled={proses}>Kembali</button>
       </div>
     </>}
 
     <nav className="view-nav officer-nav" aria-label="Navigasi petugas">{NAV.map(([ikon, label, href]) =>
-      <Link key={label} href={href} className={label === 'Pekerjaan' ? 'active' : ''}><img src={'/uc16/' + ikon} alt="" /><span>{label}</span></Link>)}
+      <Link key={label} href={href} className={label === 'Pekerjaan' ? 'active' : ''} aria-current={label === 'Pekerjaan' ? 'page' : undefined}><img src={'/uc16/' + ikon} alt="" /><span>{label}</span></Link>)}
     </nav>
   </main>;
 }

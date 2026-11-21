@@ -23,5 +23,3 @@ export type DataPetugas = {
 };
 
 export type JenisDokumentasi = 'Foto Penyerahan' | 'Tanda Tangan Digital';
-
-export type AksesPetugas = 'petugas' | 'bukan-petugas' | 'belum-masuk' | 'tanpa-konfigurasi';

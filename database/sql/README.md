@@ -31,3 +31,21 @@ pengajunya ditentukan dari data yang valid.
 
 `pg_cron` dan dua jadwal UC-09/UC-10 sudah aktif pada Project FITS.
 Pencatatan kecocokan pada pilihan "Ini Barang yang Sama" belum diimplementasi.
+
+## UC-15 dan UC-16
+
+Setelah profil UC-01, riwayat UC-08, notifikasi UC-09, dan integrasi klaim
+UC-14 tersedia, jalankan SQL berikut secara berurutan. Jalankan setiap file
+enum dalam transaksi terpisah.
+
+1. `uc15_01_status_klaim.sql`
+2. `uc15_02_verifikasi_klaim.sql`
+3. `uc16_01_status_selesai.sql`
+4. `uc16_02_pembaruan_status.sql`
+
+Fungsi Petugas memakai tabel klaim yang sama dengan UC-14. Bukti klaim dan
+dokumentasi serah terima berada di bucket privat. Akses Petugas ditentukan
+oleh kolom `profil.peran` yang dikelola administrator.
+
+Pada Project FITS, nilai enum sudah tersedia dan kedua skrip fungsi telah
+diterapkan sebagai migrasi `integrasi_uc15_uc16_skema_klaim_fits`.

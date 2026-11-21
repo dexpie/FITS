@@ -1,0 +1,28 @@
+@reference "../tailwind.css";
+
+.uc15 .view-header img { @apply block size-5; }
+.uc15-info, .uc15-kecil { @apply m-0 text-xs text-[#6b7280]; }
+.uc15-galat { @apply m-0 rounded-lg bg-[#fef2f2] px-3 py-2.5 text-xs text-[#b91c1c]; }
+.uc15-peringatan { @apply m-0 rounded-lg bg-[#fff3d6] px-3 py-2.5 text-xs text-[#92400e]; }
+.uc15-cari, .uc15-form { @apply flex flex-col gap-2 rounded-xl border border-solid border-[#dde1e7] bg-white p-3; }
+.uc15-form { @apply gap-2.5; }
+.uc15-cari label, .uc15-form label:not(.uc15-centang) { @apply flex flex-col gap-1.5 text-[13px] font-semibold; }
+.uc15-cari input, .uc15-form input:not([type]) { @apply h-10 rounded-lg px-2.5 text-[13px]; }
+.uc15-cari button { @apply h-10 cursor-pointer rounded-lg border-0 bg-[#073a75] font-bold text-white disabled:opacity-50; }
+.uc15-judul { @apply m-0 text-sm; }
+.uc15-baris { @apply flex justify-between gap-2 text-xs; }
+.uc15-jawaban { @apply flex flex-col gap-1 border-t border-solid border-[#eef0f3] py-2 text-xs; }
+.uc15-jawaban .temuan { @apply text-[#073a75]; }
+.uc15-jawaban .klaim { @apply text-[#166534]; }
+.uc15-form fieldset { @apply m-0 flex flex-col gap-2 border-0 p-0; }
+.uc15-form legend { @apply mb-1.5 text-[13px] font-semibold; }
+.uc15-centang { @apply flex items-center gap-2 text-xs font-normal; }
+.uc15-centang input { @apply accent-[#073a75]; }
+.uc15-tombol { @apply grid min-h-11 cursor-pointer place-items-center rounded-lg border-0 bg-[#ffcc29] font-bold text-[#1f2937] no-underline disabled:opacity-50; }
+.uc15-tombol-garis { @apply h-11 cursor-pointer rounded-lg border border-solid border-[#073a75] bg-white font-bold text-[#073a75] disabled:opacity-50; }
+.uc15-tombol-teks { @apply h-9 cursor-pointer border-0 bg-transparent font-semibold text-[#6b7280] disabled:opacity-50; }
+.uc15-hasil { @apply flex flex-col gap-1.5 rounded-xl border border-solid p-3.5 text-xs; }
+.uc15-hasil.cocok { @apply border-[#bbf7d0] bg-[#dcfce7]; }
+.uc15-hasil.tidak { @apply border-[#fecaca] bg-[#fef2f2]; }
+.uc15-hasil img { @apply size-6; }
+.uc15-hasil strong { @apply text-[15px]; }

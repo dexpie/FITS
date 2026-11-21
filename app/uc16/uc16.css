@@ -1,0 +1,9 @@
+@reference "../tailwind.css";
+
+.uc16 .file { @apply sr-only; }
+.uc16 .documentation-box:focus-within { @apply outline-2 outline-[#073a75]; }
+.uc16-galat { @apply m-0 rounded-lg bg-[#fef2f2] px-3 py-2.5 text-xs text-[#b91c1c]; }
+ul.uc16-galat { @apply pl-7; }
+.uc16-berhasil { @apply m-0 rounded-lg bg-[#dcfce7] px-3 py-2.5 text-xs font-semibold text-[#166534]; }
+.uc16-pilih { @apply h-10 rounded-lg border border-solid border-[#dde1e7] bg-white px-2.5 text-[13px]; }
+.uc16-tautan { @apply text-xs font-bold text-[#073a75]; }
